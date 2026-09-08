@@ -10,6 +10,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@brothers-sports-zone/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       '@supabase/supabase-js':
         specifier: ^2.57.0
         version: 2.116.0

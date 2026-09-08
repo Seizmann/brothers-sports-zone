@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { NavBar } from "../components/NavBar";
 import { FooterDark } from "../components/FooterDark";
 import { RequireAdmin, RequireUser } from "../components/guards";
+import { AppLayout } from "../components/AppLayout";
 import { Outlet } from "react-router-dom";
 
 import HomePage from "../pages/HomePage";
@@ -65,9 +66,11 @@ export function AppTree() {
         <Route path="/auth/signup" element={<SignUpPage />} />
 
         <Route element={<RequireUser />}>
-          <Route path="/book" element={<BookingPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/dashboard/booking/:id" element={<BookingDetailPage />} />
+          <Route element={<AppLayout />}>
+            <Route path="/book" element={<BookingPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard/booking/:id" element={<BookingDetailPage />} />
+          </Route>
         </Route>
 
         <Route path="/management/login" element={<AdminLoginPage />} />
