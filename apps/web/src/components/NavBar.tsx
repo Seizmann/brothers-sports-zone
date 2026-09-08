@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useSession } from "../lib/session";
+import { useHideOnScroll } from "../lib/useHideOnScroll";
 
 const links = [
   { to: "/gallery", label: "Gallery" },
@@ -8,15 +9,25 @@ const links = [
 ];
 
 /** Fixed top nav overlaid on photography — transparent, white on image.
- *  Collapses to a full-screen dark menu below 768px. */
+ *  Hides on scroll down, returns on scroll up; collapses to a full-screen
+ *  dark menu below 768px (the header never hides while the menu is open). */
 export function NavBar() {
   const { session, profile, isAdmin, signOut } = useSession();
   const [open, setOpen] = useState(false);
+  const scrollHidden = useHideOnScroll(!open);
+  const hidden = scrollHidden && !open;
 
   const close = () => setOpen(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 print-hide">
+    // The transform is applied only while hidden: a persistent transform
+    // would make this header the containing block for its fixed inset-0
+    // menu child and collapse the full-screen menu to the header's box.
+    <header
+      className={`fixed inset-x-0 top-0 z-50 print-hide transition-transform duration-300 ease-out${
+        hidden ? " -translate-y-full" : ""
+      }`}
+    >
       <div className="flex items-center justify-between px-6 py-6 md:px-10">
         <Link to="/" className="button-cap text-white" onClick={close}>
           Brothers Sports Zone
