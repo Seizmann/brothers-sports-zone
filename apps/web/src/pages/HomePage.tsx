@@ -1,14 +1,92 @@
+import { useEffect, useState } from "react";
+import type { Slot } from "@brothers-sports-zone/shared-types";
 import { GhostButton } from "../components/GhostButton";
 import { usePageMeta, PUBLIC_PAGES } from "../lib/seo";
+import { bdt, formatSlotRange } from "../lib/format";
+import { fetchSlots } from "../modules/booking/lib/bookingData";
 
 const home = PUBLIC_PAGES[0];
 
-const periods = [
-  { name: "Morning", window: "06:00 – 10:30", note: "3 slots" },
-  { name: "Afternoon", window: "10:30 – 15:00", note: "3 slots" },
-  { name: "Evening", window: "15:00 – 18:00", note: "2 slots" },
-  { name: "Night", window: "18:00 – 06:00", note: "8 slots" },
-];
+const PERIODS = ["Morning", "Afternoon", "Evening", "Night"] as const;
+
+/** Live slot list from the slots table, grouped into period accordions.
+ *  One group open at a time; while loading or on fetch failure the band
+ *  keeps its heading and footnote only. */
+function SlotOverview() {
+  const [slots, setSlots] = useState<Slot[] | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetchSlots()
+      .then((rows) => {
+        if (active) setSlots(rows);
+      })
+      .catch(() => {
+        if (active) setSlots(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!slots) return null;
+
+  const groups = PERIODS.map((period) => ({
+    period,
+    slots: slots.filter((s) => s.period === period),
+  })).filter((g) => g.slots.length > 0);
+
+  return (
+    <div className="mt-12 border-t border-hairline-on-dark">
+      {groups.map(({ period, slots: groupSlots }) => {
+        const expanded = open === period;
+        const headerId = `slots-${period.toLowerCase()}-header`;
+        const panelId = `slots-${period.toLowerCase()}-panel`;
+        return (
+          <div key={period} className="border-b border-hairline-on-dark">
+            <button
+              type="button"
+              id={headerId}
+              aria-expanded={expanded}
+              aria-controls={panelId}
+              onClick={() => setOpen(expanded ? null : period)}
+              className="flex min-h-[56px] w-full items-center justify-between gap-4 py-4 text-left transition-colors hover:bg-white/5"
+            >
+              <span className="button-cap">{period}</span>
+              <span className="micro-cap flex items-center gap-3 text-white/50">
+                {groupSlots.length} slots
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 16 16"
+                  className={`h-3 w-3 transition-transform ${expanded ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M3 6l5 5 5-5" />
+                </svg>
+              </span>
+            </button>
+            {expanded && (
+              <ul id={panelId} role="region" aria-labelledby={headerId} className="pb-2">
+                {groupSlots.map((slot) => (
+                  <li
+                    key={slot.id}
+                    className="flex items-center justify-between gap-4 border-t border-hairline-on-dark py-3"
+                  >
+                    <span className="caption text-white/80">{formatSlotRange(slot.label)}</span>
+                    <span className="caption font-bold">{slot.price > 0 ? bdt(slot.price) : "price TBD"}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function HomePage() {
   usePageMeta(home);
@@ -53,22 +131,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Slot overview band */}
+      {/* Slot overview band — live per-slot times and prices, expandable */}
       <section className="bg-canvas-night px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
         <p className="eyebrow mb-6 text-white/60">Daily schedule</p>
         <h2 className="display-lg">Sixteen slots. One calendar.</h2>
-        <div className="mt-12 grid grid-cols-1 border-t border-hairline-on-dark sm:grid-cols-2 lg:grid-cols-4">
-          {periods.map((p) => (
-            <div
-              key={p.name}
-              className="border-b border-r border-hairline-on-dark p-6 first:border-l sm:[&:nth-child(2n)]:border-l-0 lg:[&:nth-child(2n)]:border-l lg:[&:nth-child(4n)]:border-r-0"
-            >
-              <p className="button-cap">{p.name}</p>
-              <p className="caption mt-4 text-white/70">{p.window}</p>
-              <p className="micro-cap mt-1 text-white/50">{p.note}</p>
-            </div>
-          ))}
-        </div>
+        <SlotOverview />
         <p className="caption mt-8 max-w-xl text-white/60">
           Prices are set per slot by the turf. Selecting a slot holds it for five minutes while you complete payment.
         </p>
