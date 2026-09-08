@@ -3,6 +3,7 @@ import { NavBar } from "../components/NavBar";
 import { FooterDark } from "../components/FooterDark";
 import { RequireAdmin, RequireUser } from "../components/guards";
 import { AppLayout } from "../components/AppLayout";
+import { ScrollToTop } from "../components/ScrollToTop";
 import { Outlet } from "react-router-dom";
 
 import HomePage from "../pages/HomePage";
@@ -97,6 +98,7 @@ export function AppTree() {
 export function AppRoutes() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AppTree />
     </BrowserRouter>
   );
