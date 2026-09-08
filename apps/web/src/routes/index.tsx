@@ -1,0 +1,89 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { NavBar } from "../components/NavBar";
+import { FooterDark } from "../components/FooterDark";
+import { RequireAdmin, RequireUser } from "../components/guards";
+import { Outlet } from "react-router-dom";
+
+import HomePage from "../pages/HomePage";
+import GalleryPage from "../pages/GalleryPage";
+import ContactPage from "../pages/ContactPage";
+import TermsPage from "../pages/TermsPage";
+import PrivacyPage from "../pages/PrivacyPage";
+
+import BookingPage from "../modules/booking/pages/BookingPage";
+import DashboardPage from "../modules/dashboard/pages/DashboardPage";
+import BookingDetailPage from "../modules/dashboard/pages/BookingDetailPage";
+import LoginPage from "../modules/auth/pages/LoginPage";
+import SignUpPage from "../modules/auth/pages/SignUpPage";
+
+import AdminLoginPage from "../modules/management/auth/pages/AdminLoginPage";
+import ManagementDashboardPage from "../modules/management/dashboard/pages/ManagementDashboardPage";
+import BookingsPage from "../modules/management/bookings/pages/BookingsPage";
+import NewWalkInPage from "../modules/management/bookings/pages/NewWalkInPage";
+import SlotsPage from "../modules/management/slots/pages/SlotsPage";
+import BlackoutsPage from "../modules/management/blackouts/pages/BlackoutsPage";
+import CouponsPage from "../modules/management/coupons/pages/CouponsPage";
+import AdminsPage from "../modules/management/admins/pages/AdminsPage";
+import UsersPage from "../modules/management/users/pages/UsersPage";
+import AnalyticsPage from "../modules/management/analytics/pages/AnalyticsPage";
+
+function PublicLayout() {
+  return (
+    <div className="min-h-screen bg-canvas-night text-white">
+      <NavBar />
+      <Outlet />
+      <FooterDark />
+    </div>
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <main className="flex min-h-screen items-end p-6 sm:p-10 lg:p-16">
+      <div>
+        <p className="eyebrow mb-6 text-white/60">404</p>
+        <h1 className="display-xl">Page not found</h1>
+      </div>
+    </main>
+  );
+}
+
+export function AppRoutes() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+        </Route>
+
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/signup" element={<SignUpPage />} />
+
+        <Route element={<RequireUser />}>
+          <Route path="/book" element={<BookingPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard/booking/:id" element={<BookingDetailPage />} />
+        </Route>
+
+        <Route path="/management/login" element={<AdminLoginPage />} />
+        <Route element={<RequireAdmin />}>
+          <Route path="/management" element={<ManagementDashboardPage />} />
+          <Route path="/management/bookings" element={<BookingsPage />} />
+          <Route path="/management/bookings/new" element={<NewWalkInPage />} />
+          <Route path="/management/slots" element={<SlotsPage />} />
+          <Route path="/management/blackouts" element={<BlackoutsPage />} />
+          <Route path="/management/coupons" element={<CouponsPage />} />
+          <Route path="/management/admins" element={<AdminsPage />} />
+          <Route path="/management/users" element={<UsersPage />} />
+          <Route path="/management/analytics" element={<AnalyticsPage />} />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}

@@ -1,4 +1,31 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+/* Design tokens — see DESIGN.md. Inter (SIL OFL) is the active typeface per
+   the documented D-DIN substitute rule; font stacks keep D-DIN first so a
+   licensed D-DIN file dropped into /fonts is picked up by adding only the
+   @font-face below. */
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter-var-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* TODO(user): drop licensed D-DIN woff2 files into /public/fonts and add the
+   @font-face for "D-DIN" / "D-DIN-Bold" here — no other change is needed. */
+@font-face {
+  font-family: "D-DIN";
+  src: local("D-DIN");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "D-DIN-Bold";
+  src: local("D-DIN-Bold");
+  font-weight: 700;
+  font-display: swap;
+}
+
 @import "tailwindcss";
 
 @theme {
@@ -17,19 +44,6 @@
   --radius-pill: 32px;
 }
 
-@font-face {
-  font-family: "D-DIN";
-  src: local("D-DIN");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "D-DIN-Bold";
-  src: local("D-DIN-Bold");
-  font-weight: 700;
-  font-display: swap;
-}
-
 :root {
   color: #ffffff;
   background: #000000;
@@ -44,6 +58,7 @@ body { margin: 0; min-width: 320px; min-height: 100vh; background: #000; }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 
+/* Display tiers — uppercase, tight leading, positive tracking */
 .display-xxl {
   font-family: var(--font-display);
   font-size: clamp(40px, 6vw, 80px);
@@ -55,13 +70,23 @@ button { cursor: pointer; }
 
 .display-xl {
   font-family: var(--font-display);
-  font-size: clamp(40px, 4.5vw, 60px);
+  font-size: clamp(36px, 4.5vw, 60px);
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
 
+.display-lg {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.4vw, 48px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: .96px;
+  text-transform: uppercase;
+}
+
+/* Caps chrome */
 .eyebrow, .button-cap {
   font-size: 13px;
   font-weight: 700;
@@ -70,6 +95,20 @@ button { cursor: pointer; }
   text-transform: uppercase;
 }
 
+.micro-cap {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 2;
+  letter-spacing: .96px;
+  text-transform: uppercase;
+}
+
+.caption {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Ghost outlined pill — the only CTA on dark surfaces */
 .ghost-button {
   min-height: 50px;
   border: 1px solid currentColor;
@@ -81,3 +120,33 @@ button { cursor: pointer; }
 }
 
 .ghost-button:hover, .ghost-button:focus-visible { background: #fff; color: #000; }
+
+/* Ghost pill on light surfaces */
+.ghost-button-light {
+  min-height: 50px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  padding: 18px 24px;
+  background: transparent;
+  color: inherit;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.ghost-button-light:hover, .ghost-button-light:focus-visible { background: #000; color: #fff; }
+
+/* Form input on white form surfaces */
+.text-input {
+  min-height: 48px;
+  width: 100%;
+  background: #fff;
+  color: #000;
+  border: 1px solid var(--color-hairline-on-light);
+  border-radius: var(--radius-xs);
+  padding: 12px 16px;
+  outline: none;
+}
+
+.text-input:focus { border-color: #000; }
+
+/* Hairline separator on dark canvas */
+.hairline-dark { border-top: 1px solid var(--color-hairline-on-dark); }

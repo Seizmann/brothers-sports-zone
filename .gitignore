@@ -9,6 +9,9 @@ node_modules/
 
 # Local/generated image assets
 docs/
+# Site images under apps/web/public/docs are committed (decision: session 4)
+!apps/web/public/docs/
+!apps/web/public/docs/**
 
 # AI Agent working documents (never commit)
 AGENT.md
