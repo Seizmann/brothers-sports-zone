@@ -1,0 +1,83 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-canvas-night: #000000;
+  --color-canvas-night-soft: #0a0a0a;
+  --color-canvas-light: #ffffff;
+  --color-canvas-cool: #f0f0fa;
+  --color-hairline-on-dark: #3a3a3f;
+  --color-hairline-on-light: #e0e0e8;
+  --color-ink-mute: #5a5a5f;
+  --font-display: "D-DIN-Bold", "Arial Narrow", Inter, Arial, sans-serif;
+  --font-body: "D-DIN", Inter, Arial, sans-serif;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-pill: 32px;
+}
+
+@font-face {
+  font-family: "D-DIN";
+  src: local("D-DIN");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "D-DIN-Bold";
+  src: local("D-DIN-Bold");
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  color: #ffffff;
+  background: #000000;
+  font-family: var(--font-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html { background: #000; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: #000; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.display-xxl {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 80px);
+  font-weight: 700;
+  line-height: .95;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 4.5vw, 60px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.eyebrow, .button-cap {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: .94;
+  letter-spacing: 1.17px;
+  text-transform: uppercase;
+}
+
+.ghost-button {
+  min-height: 50px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  padding: 18px 24px;
+  background: transparent;
+  color: inherit;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.ghost-button:hover, .ghost-button:focus-visible { background: #fff; color: #000; }

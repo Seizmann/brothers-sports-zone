@@ -1,0 +1,18 @@
+{
+  "name": "brothers-sports-zone",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Brothers Sports Zone — football turf booking platform",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "preview": "pnpm --filter web preview",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

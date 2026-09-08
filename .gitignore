@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment files (real credentials — never commit)
+.env
+.env.local
+.env.*.local
+
+# Local/generated image assets
+docs/
+
+# AI Agent working documents (never commit)
+AGENT.md
+CLAUDE.md
+DESIGN.md
+REQUIREMENT.md
+SECRETS.md
+WORKLOGS.md
+
+# Build outputs
+dist/
+build/
+.output/
+.vercel/
+
+# Vite
+vite.config.ts.timestamp-*
+
+# TypeScript
+*.tsbuildinfo
+
+# Supabase local
+supabase/.temp/
+supabase/functions/.cache/
+
+# ZCode local state
+.zcode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
