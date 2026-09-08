@@ -28,7 +28,18 @@ export function FooterDark() {
             </div>
           </nav>
         </div>
-        <p className="caption mt-12 text-white/40">© {new Date().getFullYear()} Brothers Sports Zone. All rights reserved.</p>
+        <p className="caption mt-12 text-white/40">
+          © {new Date().getFullYear()}{" "}
+          <a
+            href="https://spritexai.pro.bd"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-white/70"
+          >
+            SpritexAI
+          </a>
+          . All rights reserved.
+        </p>
       </div>
     </footer>
   );
