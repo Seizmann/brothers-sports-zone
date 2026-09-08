@@ -11,6 +11,7 @@ const tabs = [
   { to: "/management/admins", label: "Admins" },
   { to: "/management/users", label: "Users" },
   { to: "/management/analytics", label: "Analytics" },
+  { to: "/management/settings", label: "Settings" },
 ];
 
 /** Chrome for all /management pages. Access is guarded by RequireAdmin. */

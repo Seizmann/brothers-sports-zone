@@ -29,6 +29,7 @@ import CouponsPage from "../modules/management/coupons/pages/CouponsPage";
 import AdminsPage from "../modules/management/admins/pages/AdminsPage";
 import UsersPage from "../modules/management/users/pages/UsersPage";
 import AnalyticsPage from "../modules/management/analytics/pages/AnalyticsPage";
+import SettingsPage from "../modules/management/settings/pages/SettingsPage";
 
 function PublicLayout() {
   return (
@@ -87,6 +88,7 @@ export function AppTree() {
             <Route path="/management/admins" element={<AdminsPage />} />
             <Route path="/management/users" element={<UsersPage />} />
             <Route path="/management/analytics" element={<AnalyticsPage />} />
+            <Route path="/management/settings" element={<SettingsPage />} />
           </Route>
         </Route>
 
