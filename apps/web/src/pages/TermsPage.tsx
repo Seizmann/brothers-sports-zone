@@ -13,11 +13,11 @@ const sections = [
   },
   {
     heading: "Cancellation by users",
-    body: "You may cancel a booking from your dashboard while it is still awaiting payment verification. Once a booking is confirmed, it can no longer be cancelled by the user. Advance payments are not refunded when a user cancels.",
+    body: "You may cancel a booking from your dashboard while it is still awaiting payment verification. Once a booking is confirmed, you can no longer cancel it. Advance payments are not refunded when you cancel.",
   },
   {
     heading: "Cancellation by the turf",
-    body: "The turf may cancel any booking (for example for maintenance or events). Confirmed bookings cancelled by the turf are refunded in full.",
+    body: "The turf may cancel any booking, for example for maintenance or events. If the turf cancels a confirmed booking, you get a full refund.",
   },
   {
     heading: "Conduct",
@@ -25,7 +25,7 @@ const sections = [
   },
   {
     heading: "Accounts",
-    body: "Access to bookings is through your phone number and a 4-digit PIN. Do not share your PIN. If you forget it, contact the turf to have it reset — there is no self-service reset.",
+    body: "You sign in with your phone number and a 4-digit PIN. Do not share your PIN. There is no self-service reset; contact the turf if you forget it.",
   },
 ];
 

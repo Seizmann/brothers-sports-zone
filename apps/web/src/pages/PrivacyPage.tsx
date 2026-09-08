@@ -9,8 +9,8 @@ const sections = [
     body: "To manage bookings we store your name, phone number, and a securely hashed 4-digit PIN. For payments we store the bKash/Nagad transaction ID and sender number you submit, along with your booking history.",
   },
   {
-    heading: "How it is used",
-    body: "Your data is used only to operate bookings: reserving slots, verifying payments, showing your dashboard and receipts, and contacting you about your bookings when needed. We do not sell or share your data with third parties.",
+    heading: "How we use it",
+    body: "We use your data only to run bookings: reserving slots, verifying payments, showing your dashboard and receipts, and contacting you about a booking when needed. We do not sell or share your data with third parties.",
   },
   {
     heading: "Security",

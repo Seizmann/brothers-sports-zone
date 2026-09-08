@@ -125,8 +125,8 @@ export default function HomePage() {
           <p className="eyebrow mb-6 text-white">The turf</p>
           <h2 className="display-xl max-w-3xl">Built for the game</h2>
           <p className="mt-8 max-w-xl text-base leading-7 tracking-[.32px] text-white/80">
-            Brothers Sports Zone is a single football turf in Faridpur, Dhaka. Book solo slots or lock the whole
-            evening — the calendar shows real-time availability across every slot.
+            Brothers Sports Zone is a single football turf in Faridpur, Dhaka. Book one slot at a time or take the
+            whole evening. The calendar shows live availability for every slot.
           </p>
         </div>
       </section>
@@ -137,7 +137,7 @@ export default function HomePage() {
         <h2 className="display-lg">Sixteen slots. One calendar.</h2>
         <SlotOverview />
         <p className="caption mt-8 max-w-xl text-white/60">
-          Prices are set per slot by the turf. Selecting a slot holds it for five minutes while you complete payment.
+          The turf sets prices per slot. Selecting a slot holds it for five minutes while you complete payment.
         </p>
       </section>
 

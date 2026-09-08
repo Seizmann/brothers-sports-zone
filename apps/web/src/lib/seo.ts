@@ -13,7 +13,7 @@ export const PUBLIC_PAGES: PageMeta[] = [
     path: "/",
     title: "Brothers Sports Zone — Football Turf Booking in Faridpur",
     description:
-      "Book your football turf slot online at Brothers Sports Zone, Faridpur, Dhaka. 16 daily slots from morning to late night, instant slot locking, easy bKash/Nagad advance payment.",
+      "Book a football turf slot at Brothers Sports Zone in Faridpur, Dhaka. Sixteen daily slots from morning to late night with live availability and bKash/Nagad advance payment.",
   },
   {
     path: "/gallery",
