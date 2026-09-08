@@ -15,10 +15,15 @@ export function dhakaToday(): string {
   }).format(new Date());
 }
 
+/** A calendar date shifted by `days` from the given YYYY-MM-DD date. */
+export function shiftDate(date: string, days: number): string {
+  const [y, m, d] = date.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+}
+
 /** A Dhaka-calendar date shifted by `days` from today, as YYYY-MM-DD. */
 export function dhakaDateShifted(days: number): string {
-  const [y, m, d] = dhakaToday().split("-").map(Number);
-  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+  return shiftDate(dhakaToday(), days);
 }
 
 /** Normalize common Bangladeshi phone inputs to 01XXXXXXXXX. */

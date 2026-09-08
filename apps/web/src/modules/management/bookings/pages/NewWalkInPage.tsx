@@ -3,6 +3,7 @@ import type { Booking, PaymentMethod, Settings, Slot, SlotAvailability, SlotLock
 import { supabase } from "../../../../lib/supabase";
 import { useSession } from "../../../../lib/session";
 import {
+  bookingFetchWindow,
   ensureWalkInUser,
   fetchActiveLocks,
   fetchAvailability,
@@ -45,12 +46,15 @@ export default function NewWalkInPage() {
   }, []);
 
   const reload = useCallback(async () => {
-    const from = dhakaToday();
-    const to = new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10);
-    const [avail, activeLocks] = await Promise.all([fetchAvailability(from, to), fetchActiveLocks(from, to)]);
-    setAvailability(avail);
-    setLocks(activeLocks);
-  }, []);
+    const { from, to } = bookingFetchWindow(selectedDate);
+    try {
+      const [avail, activeLocks] = await Promise.all([fetchAvailability(from, to), fetchActiveLocks()]);
+      setAvailability(avail);
+      setLocks(activeLocks);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load availability.");
+    }
+  }, [selectedDate]);
 
   useEffect(() => {
     if (!userId) return;

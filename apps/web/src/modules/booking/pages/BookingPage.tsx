@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSession } from "../../../lib/session";
 import {
+  bookingFetchWindow,
   extendLocks,
   fetchActiveLocks,
   fetchAvailability,
@@ -12,13 +13,11 @@ import {
   tryLock,
 } from "../lib/bookingData";
 import type { Booking, Settings, Slot, SlotAvailability, SlotLock } from "@brothers-sports-zone/shared-types";
-import { dhakaDateShifted, dhakaToday } from "../../../lib/format";
+import { dhakaToday } from "../../../lib/format";
 import { DateStrip } from "../components/DateStrip";
 import { SlotGrid, type SlotState } from "../components/SlotGrid";
 import { CartPanel } from "../components/CartPanel";
 import { CheckoutPanel } from "../components/CheckoutPanel";
-
-const RANGE_DAYS = 30;
 
 export default function BookingPage() {
   const { session, profile } = useSession();
@@ -38,16 +37,15 @@ export default function BookingPage() {
 
   const reload = useCallback(async () => {
     if (!userId) return;
-    const from = dhakaToday();
-    const to = dhakaDateShifted(RANGE_DAYS);
+    const { from, to } = bookingFetchWindow(selectedDate);
     try {
-      const [avail, activeLocks] = await Promise.all([fetchAvailability(from, to), fetchActiveLocks(from, to)]);
+      const [avail, activeLocks] = await Promise.all([fetchAvailability(from, to), fetchActiveLocks()]);
       setAvailability(avail);
       setLocks(activeLocks);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load availability.");
     }
-  }, [userId]);
+  }, [userId, selectedDate]);
 
   // Initial load: slots + settings + availability/locks, then realtime updates.
   useEffect(() => {

@@ -1,7 +1,22 @@
 /** Data access for the booking flow: slots, availability, locks, settings. */
 
 import { supabase } from "../../../lib/supabase";
+import { dhakaDateShifted, dhakaToday, shiftDate } from "../../../lib/format";
 import type { Booking, PaymentMethod, Settings, Slot, SlotAvailability, SlotLock, SubmitBookingItem } from "@brothers-sports-zone/shared-types";
+
+/** The availability/lock fetch window: the base strip range, widened when the
+ *  user explores a further date (the picker has no booking-window limit per
+ *  requirements; get_slot_availability is sparse, so wide windows stay cheap). */
+const BASE_RANGE_DAYS = 30;
+const LOOKAHEAD_DAYS = 14;
+
+/** Date range to fetch for a selected date: [today, max(base range, date+lookahead)]. */
+export function bookingFetchWindow(selectedDate: string): { from: string; to: string } {
+  const from = dhakaToday();
+  const baseEnd = dhakaDateShifted(BASE_RANGE_DAYS);
+  const to = selectedDate > baseEnd ? shiftDate(selectedDate, LOOKAHEAD_DAYS) : baseEnd;
+  return { from, to };
+}
 
 export async function fetchSlots(): Promise<Slot[]> {
   const { data, error } = await supabase.from("slots").select("*").order("slot_number");
@@ -15,16 +30,16 @@ export async function fetchAvailability(from: string, to: string): Promise<SlotA
   return (data ?? []) as SlotAvailability[];
 }
 
-/** Active, unattached locks in range — mine and everyone else's (RLS lets any
- *  authenticated client see non-expired locks so the grid reflects holds). */
-export async function fetchActiveLocks(from: string, to: string): Promise<SlotLock[]> {
+/** Every active, unattached lock — mine and everyone else's (RLS lets any
+ *  authenticated client see non-expired locks so the grid reflects holds).
+ *  Unbounded by date: active locks are few (short TTL + cleanup sweep), and
+ *  the cart must include holds on dates outside the availability window. */
+export async function fetchActiveLocks(): Promise<SlotLock[]> {
   const { data, error } = await supabase
     .from("slot_locks")
     .select("*")
     .is("booking_id", null)
-    .gt("expires_at", new Date().toISOString())
-    .gte("date", from)
-    .lte("date", to);
+    .gt("expires_at", new Date().toISOString());
   if (error) throw new Error(error.message);
   return (data ?? []) as SlotLock[];
 }
