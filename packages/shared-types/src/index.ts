@@ -106,6 +106,13 @@ export interface Settings {
   nagad_number: string | null;
   advance_amount_fixed: number;
   lock_minutes: number;
+  /** Public contact identity shown on /contact (NOT NULL, has defaults). */
+  contact_phone: string;
+  contact_email: string;
+  contact_location: string;
+  /** Google Maps pin coordinates. */
+  map_lat: number;
+  map_lng: number;
 }
 
 /** Item passed to the submit_booking RPC. */
