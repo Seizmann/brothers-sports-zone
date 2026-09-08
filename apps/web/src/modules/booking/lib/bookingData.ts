@@ -71,13 +71,16 @@ export function subscribeToSlotChanges(onChange: () => void): () => void {
 }
 
 /** Atomic booking submission. Server recomputes all amounts and validates
- *  every slot, the coupon, and the caller's locks before inserting. */
+ *  every slot, the coupon, and the caller's locks before inserting.
+ *  Admin walk-ins pass `confirm` (+ `forUserPhone`) to land as confirmed. */
 export async function submitBooking(params: {
   items: SubmitBookingItem[];
   paymentMethod: PaymentMethod;
   txnId: string | null;
   txnPhone: string | null;
   couponCode: string | null;
+  confirm?: boolean;
+  forUserPhone?: string | null;
 }): Promise<Booking> {
   const { data, error } = await supabase.rpc("submit_booking", {
     p_items: params.items,
@@ -85,9 +88,16 @@ export async function submitBooking(params: {
     p_txn_id: params.txnId,
     p_txn_phone: params.txnPhone,
     p_coupon_code: params.couponCode,
-    p_confirm: false,
-    p_for_user_phone: null,
+    p_confirm: params.confirm ?? false,
+    p_for_user_phone: params.forUserPhone ?? null,
   });
   if (error) throw new Error(error.message);
   return data as Booking;
+}
+
+/** Admin: find a user by phone or create a minimal walk-in account. */
+export async function ensureWalkInUser(name: string, phone: string): Promise<{ id: string; name: string; phone: string }> {
+  const { data, error } = await supabase.rpc("admin_ensure_user", { p_name: name, p_phone: phone });
+  if (error) throw new Error(error.message);
+  return data as { id: string; name: string; phone: string };
 }
