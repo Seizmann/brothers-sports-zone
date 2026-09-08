@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useSession } from "../../../lib/session";
 import {
   extendLocks,
@@ -10,16 +11,17 @@ import {
   subscribeToSlotChanges,
   tryLock,
 } from "../lib/bookingData";
-import type { Settings, Slot, SlotAvailability, SlotLock } from "@brothers-sports-zone/shared-types";
+import type { Booking, Settings, Slot, SlotAvailability, SlotLock } from "@brothers-sports-zone/shared-types";
 import { dhakaDateShifted, dhakaToday } from "../../../lib/format";
 import { DateStrip } from "../components/DateStrip";
 import { SlotGrid, type SlotState } from "../components/SlotGrid";
 import { CartPanel } from "../components/CartPanel";
+import { CheckoutPanel } from "../components/CheckoutPanel";
 
 const RANGE_DAYS = 30;
 
 export default function BookingPage() {
-  const { session } = useSession();
+  const { session, profile } = useSession();
   const userId = session?.user?.id ?? null;
 
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -30,6 +32,7 @@ export default function BookingPage() {
   const [error, setError] = useState<string | null>(null);
   const [busySlotId, setBusySlotId] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [confirmed, setConfirmed] = useState<Booking | null>(null);
 
   const loadRef = useRef<() => void>(() => {});
 
@@ -163,6 +166,35 @@ export default function BookingPage() {
     }
   }
 
+  if (confirmed) {
+    return (
+      <main className="mx-auto min-h-screen w-full max-w-3xl px-6 pb-24 pt-28 sm:px-10 sm:pt-36 lg:px-16">
+        <p className="eyebrow mb-4 text-white/60">Step 3 · Confirmation</p>
+        <h1 className="display-xl">Payment submitted</h1>
+        <p className="button-cap mt-12 text-white/60">Your booking ID</p>
+        <p className="display-lg mt-2">{confirmed.booking_code}</p>
+        <p className="mt-8 max-w-xl text-base leading-7 tracking-[.32px] text-white/80">
+          Your payment is under review. You'll see confirmation in your dashboard.
+        </p>
+        <div className="mt-10 flex flex-wrap gap-4">
+          <Link to="/dashboard" className="ghost-button button-cap inline-flex items-center justify-center">
+            Go to dashboard
+          </Link>
+          <button
+            type="button"
+            onClick={() => {
+              setConfirmed(null);
+              void reload();
+            }}
+            className="ghost-button button-cap inline-flex items-center justify-center"
+          >
+            Book more slots
+          </button>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="mx-auto min-h-screen w-full max-w-6xl px-6 pb-24 pt-28 sm:px-10 sm:pt-36 lg:px-16">
       <p className="eyebrow mb-4 text-white/60">Booking</p>
@@ -198,6 +230,20 @@ export default function BookingPage() {
           <CartPanel items={cartItems} total={cartTotal} now={now} onRemove={(lock) => void onRelease(lock)} />
         </aside>
       </div>
+
+      {cartItems.length > 0 && settings && (
+        <div className="mt-14">
+          <CheckoutPanel
+            items={cartItems}
+            settings={settings}
+            defaultPhone={profile?.phone ?? ""}
+            onSubmitted={(booking) => {
+              setConfirmed(booking);
+              void reload();
+            }}
+          />
+        </div>
+      )}
     </main>
   );
 }

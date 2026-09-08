@@ -1,7 +1,7 @@
 /** Data access for the booking flow: slots, availability, locks, settings. */
 
 import { supabase } from "../../../lib/supabase";
-import type { Settings, Slot, SlotAvailability, SlotLock } from "@brothers-sports-zone/shared-types";
+import type { Booking, PaymentMethod, Settings, Slot, SlotAvailability, SlotLock, SubmitBookingItem } from "@brothers-sports-zone/shared-types";
 
 export async function fetchSlots(): Promise<Slot[]> {
   const { data, error } = await supabase.from("slots").select("*").order("slot_number");
@@ -68,4 +68,26 @@ export function subscribeToSlotChanges(onChange: () => void): () => void {
   return () => {
     void supabase.removeChannel(channel);
   };
+}
+
+/** Atomic booking submission. Server recomputes all amounts and validates
+ *  every slot, the coupon, and the caller's locks before inserting. */
+export async function submitBooking(params: {
+  items: SubmitBookingItem[];
+  paymentMethod: PaymentMethod;
+  txnId: string | null;
+  txnPhone: string | null;
+  couponCode: string | null;
+}): Promise<Booking> {
+  const { data, error } = await supabase.rpc("submit_booking", {
+    p_items: params.items,
+    p_payment_method: params.paymentMethod,
+    p_txn_id: params.txnId,
+    p_txn_phone: params.txnPhone,
+    p_coupon_code: params.couponCode,
+    p_confirm: false,
+    p_for_user_phone: null,
+  });
+  if (error) throw new Error(error.message);
+  return data as Booking;
 }
