@@ -48,10 +48,11 @@ function NotFoundPage() {
   );
 }
 
-export function AppRoutes() {
+/** Route tree without a router — reused by the SPA entry and the
+ *  build-time prerender script (MemoryRouter / any router). */
+export function AppTree() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/gallery" element={<GalleryPage />} />
@@ -84,6 +85,13 @@ export function AppRoutes() {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+  );
+}
+
+export function AppRoutes() {
+  return (
+    <BrowserRouter>
+      <AppTree />
     </BrowserRouter>
   );
 }

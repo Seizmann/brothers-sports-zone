@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /management
+Disallow: /management/
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /book
