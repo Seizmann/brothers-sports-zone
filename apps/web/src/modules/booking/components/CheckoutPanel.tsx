@@ -26,9 +26,8 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
 
   // Preview-only; the RPC is the source of truth.
   const advancePreview = useMemo(() => {
-    const pct = settings.advance_pct;
-    return Math.round(subtotal * pct) / 100;
-  }, [subtotal, settings.advance_pct]);
+    return Math.min(settings.advance_amount_fixed, subtotal);
+  }, [subtotal, settings.advance_amount_fixed]);
 
   const payNumber = method === "bkash" ? settings.bkash_number : settings.nagad_number;
 
@@ -85,7 +84,7 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
         <span className="button-cap">{bdt(subtotal)}</span>
       </div>
       <div className="mt-1 flex items-center justify-between">
-        <span className="caption text-ink-mute">Pay online now ({settings.advance_pct}% advance)</span>
+        <span className="caption text-ink-mute">Pay online now (advance)</span>
         <span className="caption font-bold">{bdt(advancePreview)}</span>
       </div>
       <div className="flex items-center justify-between">

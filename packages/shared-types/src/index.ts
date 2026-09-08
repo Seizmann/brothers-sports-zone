@@ -104,7 +104,7 @@ export interface Settings {
   id: 1;
   bkash_number: string | null;
   nagad_number: string | null;
-  advance_pct: number;
+  advance_amount_fixed: number;
   lock_minutes: number;
 }
 
