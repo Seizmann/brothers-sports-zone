@@ -106,7 +106,7 @@ export default function AuthFlowPage() {
       setError("Account created. Please enter your PIN to continue.");
       return;
     }
-    navigate("/dashboard", { replace: true });
+    navigate(next, { replace: true });
   }
 
   const backLink = (

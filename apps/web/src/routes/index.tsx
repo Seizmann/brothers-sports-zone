@@ -1,10 +1,9 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { NavBar } from "../components/NavBar";
 import { FooterDark } from "../components/FooterDark";
 import { RequireAdmin, RequireUser } from "../components/guards";
 import { AppLayout } from "../components/AppLayout";
 import { ScrollToTop } from "../components/ScrollToTop";
-import { Outlet } from "react-router-dom";
 
 import HomePage from "../pages/HomePage";
 import GalleryPage from "../pages/GalleryPage";
@@ -51,6 +50,12 @@ function NotFoundPage() {
   );
 }
 
+/** The signup page merged into the unified flow; old links keep their intent. */
+function SignupRedirect() {
+  const location = useLocation();
+  return <Navigate to="/auth/login" replace state={location.state} />;
+}
+
 /** Route tree without a router — reused by the SPA entry and the
  *  build-time prerender script (MemoryRouter / any router). */
 export function AppTree() {
@@ -65,7 +70,7 @@ export function AppTree() {
         </Route>
 
         <Route path="/auth/login" element={<AuthFlowPage />} />
-        <Route path="/auth/signup" element={<Navigate to="/auth/login" replace />} />
+        <Route path="/auth/signup" element={<SignupRedirect />} />
 
         <Route element={<RequireUser />}>
           <Route element={<AppLayout />}>
