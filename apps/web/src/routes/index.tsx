@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { NavBar } from "../components/NavBar";
 import { FooterDark } from "../components/FooterDark";
 import { RequireAdmin, RequireUser } from "../components/guards";
@@ -15,8 +15,7 @@ import PrivacyPage from "../pages/PrivacyPage";
 import BookingPage from "../modules/booking/pages/BookingPage";
 import DashboardPage from "../modules/dashboard/pages/DashboardPage";
 import BookingDetailPage from "../modules/dashboard/pages/BookingDetailPage";
-import LoginPage from "../modules/auth/pages/LoginPage";
-import SignUpPage from "../modules/auth/pages/SignUpPage";
+import AuthFlowPage from "../modules/auth/pages/AuthFlowPage";
 
 import AdminLoginPage from "../modules/management/auth/pages/AdminLoginPage";
 import { ManagementLayout } from "../modules/management/ManagementLayout";
@@ -65,8 +64,8 @@ export function AppTree() {
           <Route path="/privacy" element={<PrivacyPage />} />
         </Route>
 
-        <Route path="/auth/login" element={<LoginPage />} />
-        <Route path="/auth/signup" element={<SignUpPage />} />
+        <Route path="/auth/login" element={<AuthFlowPage />} />
+        <Route path="/auth/signup" element={<Navigate to="/auth/login" replace />} />
 
         <Route element={<RequireUser />}>
           <Route element={<AppLayout />}>

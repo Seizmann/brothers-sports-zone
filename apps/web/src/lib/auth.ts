@@ -27,6 +27,11 @@ export async function signUpWithPhonePin(name: string, phone: string, pin: strin
   return supabase.rpc("user_sign_up", { p_name: name, p_phone: phone, p_pin: pin });
 }
 
+/** Whether an account is registered for this phone (unified flow step 1). */
+export async function phoneExists(phone: string) {
+  return supabase.rpc("auth_phone_exists", { p_phone: phone });
+}
+
 export async function signInWithPhonePin(phone: string, pin: string) {
   const password = await deriveAuthCredential(phone, pin);
   return supabase.auth.signInWithPassword({ email: syntheticEmail(phone), password });
