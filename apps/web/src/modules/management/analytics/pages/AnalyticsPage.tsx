@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import type { Booking, BookingItem } from "@brothers-sports-zone/shared-types";
-import { bdt, dhakaDateShifted, dhakaToday, formatDhakaDate } from "../../../../lib/format";
+import { bdt, dhakaDateShifted, dhakaToday, formatDhakaDate, formatSlotRange } from "../../../../lib/format";
 
 interface ItemWithSlot extends BookingItem {
   slots: { label: string; period: string } | null;
@@ -76,7 +76,7 @@ export default function AnalyticsPage() {
 
     const bySlot = new Map<string, number>();
     for (const item of activeItems) {
-      const label = item.slots?.label ?? `#${item.slot_id}`;
+      const label = item.slots ? formatSlotRange(item.slots.label) : `#${item.slot_id}`;
       bySlot.set(label, (bySlot.get(label) ?? 0) + Number(item.price));
     }
     const slotSeries = [...bySlot.entries()].sort(([, a], [, b]) => b - a);
@@ -89,7 +89,7 @@ export default function AnalyticsPage() {
 
     const bySlotCount = new Map<string, number>();
     for (const item of activeItems) {
-      const label = item.slots?.label ?? `#${item.slot_id}`;
+      const label = item.slots ? formatSlotRange(item.slots.label) : `#${item.slot_id}`;
       bySlotCount.set(label, (bySlotCount.get(label) ?? 0) + 1);
     }
     const busiest = [...bySlotCount.entries()].sort(([, a], [, b]) => b - a).slice(0, 5);

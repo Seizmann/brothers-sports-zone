@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Booking, PaymentMethod, Settings, Slot, SlotLock } from "@brothers-sports-zone/shared-types";
-import { bdt, formatDhakaDate } from "../../../lib/format";
+import { bdt, formatDhakaDate, formatSlotRange } from "../../../lib/format";
 import { submitBooking } from "../lib/bookingData";
 
 interface CheckoutPanelProps {
@@ -73,7 +73,7 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
           .map(({ lock, slot }) => (
             <li key={lock.id} className="flex items-center justify-between border-b border-hairline-on-light py-3">
               <span className="caption">
-                {formatDhakaDate(lock.date)} · {slot.label}
+                {formatDhakaDate(lock.date)} · {formatSlotRange(slot.label)}
               </span>
               <span className="caption font-bold">{bdt(slot.price)}</span>
             </li>

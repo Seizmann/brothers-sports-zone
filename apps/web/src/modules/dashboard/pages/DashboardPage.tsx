@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useSession } from "../../../lib/session";
 import { fetchMyBookings, type BookingWithItems } from "../lib/dashboardData";
 import { StatusChip } from "../components/StatusChip";
-import { bdt, dhakaToday, formatDhakaDate } from "../../../lib/format";
+import { bdt, dhakaToday, formatDhakaDate, formatSlotRange } from "../../../lib/format";
 
 function summarizeSlots(booking: BookingWithItems): string {
   const items = [...(booking.booking_items ?? [])].sort(
@@ -12,7 +12,10 @@ function summarizeSlots(booking: BookingWithItems): string {
   if (items.length === 0) return "No slots";
   const byDate = new Map<string, string[]>();
   for (const item of items) {
-    byDate.set(item.date, [...(byDate.get(item.date) ?? []), item.slots?.label ?? `#${item.slot_id}`]);
+    byDate.set(item.date, [
+      ...(byDate.get(item.date) ?? []),
+      item.slots ? formatSlotRange(item.slots.label) : `#${item.slot_id}`,
+    ]);
   }
   return [...byDate.entries()]
     .map(([date, labels]) => `${formatDhakaDate(date)} · ${labels.join(", ")}`)

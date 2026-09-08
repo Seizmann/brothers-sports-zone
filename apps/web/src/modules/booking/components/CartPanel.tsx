@@ -1,5 +1,5 @@
 import type { Slot, SlotLock } from "@brothers-sports-zone/shared-types";
-import { bdt, formatDhakaDate } from "../../../lib/format";
+import { bdt, formatDhakaDate, formatSlotRange } from "../../../lib/format";
 
 interface CartPanelProps {
   items: Array<{ lock: SlotLock; slot: Slot }>;
@@ -32,7 +32,7 @@ export function CartPanel({ items, total, now, onRemove }: CartPanelProps) {
               <div>
                 <p className="button-cap">{formatDhakaDate(lock.date)}</p>
                 <p className="caption text-white/60">
-                  {slot.label} · {bdt(slot.price)}
+                  {formatSlotRange(slot.label)} · {bdt(slot.price)}
                 </p>
               </div>
               <div className="flex items-center gap-3">

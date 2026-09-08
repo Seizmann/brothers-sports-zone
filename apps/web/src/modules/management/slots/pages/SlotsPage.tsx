@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import type { Slot } from "@brothers-sports-zone/shared-types";
-import { bdt } from "../../../../lib/format";
+import { bdt, formatSlotRange } from "../../../../lib/format";
 
 export default function SlotsPage() {
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -60,7 +60,7 @@ export default function SlotsPage() {
         <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {slots.map((slot) => (
             <div key={slot.id} className="rounded-sm border border-hairline-on-dark p-4">
-              <p className="button-cap">{slot.label}</p>
+              <p className="button-cap">{formatSlotRange(slot.label)}</p>
               <p className="micro-cap mt-1 text-white/50">{slot.period}</p>
               <div className="mt-4 flex items-center gap-2">
                 <input
@@ -70,7 +70,7 @@ export default function SlotsPage() {
                   value={drafts[slot.id] ?? ""}
                   onChange={(e) => setDrafts({ ...drafts, [slot.id]: e.target.value })}
                   className="text-input !min-h-[40px] !py-1"
-                  aria-label={`Price for ${slot.label}`}
+                  aria-label={`Price for ${formatSlotRange(slot.label)}`}
                 />
                 <button
                   type="button"

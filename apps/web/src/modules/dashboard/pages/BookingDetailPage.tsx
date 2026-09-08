@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useSession } from "../../../lib/session";
 import { cancelMyBooking, fetchBookingForUser, type BookingWithItems } from "../lib/dashboardData";
 import { StatusChip } from "../components/StatusChip";
-import { bdt, formatDhakaDate } from "../../../lib/format";
+import { bdt, formatDhakaDate, formatSlotRange } from "../../../lib/format";
 import { SITE } from "../../../lib/site";
 
 function Receipt({ booking, userName }: { booking: BookingWithItems; userName: string }) {
@@ -39,7 +39,7 @@ function Receipt({ booking, userName }: { booking: BookingWithItems; userName: s
         {booking.booking_items.map((item) => (
           <li key={item.slot_id} className="flex justify-between border-b border-hairline-on-dark py-2">
             <span className="caption">
-              {formatDhakaDate(item.date)} · {item.slots?.label ?? `Slot #${item.slot_id}`}
+              {formatDhakaDate(item.date)} · {item.slots ? formatSlotRange(item.slots.label) : `Slot #${item.slot_id}`}
             </span>
             <span className="caption">{bdt(item.price)}</span>
           </li>

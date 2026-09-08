@@ -49,3 +49,26 @@ export function formatDhakaDate(date: string): string {
     timeZone: "UTC",
   });
 }
+
+/** 24-hour "HH:MM" as 12-hour with AM/PM, e.g. "06:00" → "6:00 AM". */
+export function formatTime12(hhmm: string): string {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm.trim());
+  if (!m) return hhmm;
+  const h24 = Number(m[1]);
+  const h12 = h24 % 12 || 12;
+  return `${h12}:${m[2]} ${h24 >= 12 ? "PM" : "AM"}`;
+}
+
+/** Slot label "06:00 – 07:30" in 12-hour form: "6:00 – 7:30 AM" when both
+ *  ends share a meridiem, "10:30 PM – 12:00 AM" when the range crosses one.
+ *  Input that is not an HH:MM range is returned unchanged. */
+export function formatSlotRange(label: string): string {
+  const m = /^(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})$/.exec(label.trim());
+  if (!m) return label;
+  const start = formatTime12(m[1]);
+  const end = formatTime12(m[2]);
+  if (start.slice(-2) === end.slice(-2)) {
+    return `${start.slice(0, -3)} – ${end}`;
+  }
+  return `${start} – ${end}`;
+}

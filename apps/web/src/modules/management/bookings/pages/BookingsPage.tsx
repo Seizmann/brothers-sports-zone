@@ -10,7 +10,7 @@ import {
   statusLabel,
   type AdminBookingRow,
 } from "../lib/adminBookingsData";
-import { bdt, formatDhakaDate } from "../../../../lib/format";
+import { bdt, formatDhakaDate, formatSlotRange } from "../../../../lib/format";
 
 const STATUSES: Array<BookingStatus | "all"> = [
   "all",
@@ -240,7 +240,9 @@ export default function BookingsPage() {
                         {dates.map((d) => formatDhakaDate(d)).join(", ") || "—"}
                       </span>
                       <span className="caption block text-white/50">
-                        {(b.booking_items ?? []).map((i) => i.slots?.label ?? `#${i.slot_id}`).join(", ")}
+                        {(b.booking_items ?? [])
+                          .map((i) => (i.slots ? formatSlotRange(i.slots.label) : `#${i.slot_id}`))
+                          .join(", ")}
                       </span>
                     </td>
                     <td className="py-4 pr-4">

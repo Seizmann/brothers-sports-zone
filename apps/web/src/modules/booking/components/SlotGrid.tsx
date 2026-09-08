@@ -1,5 +1,5 @@
 import type { Period, Slot, SlotLock } from "@brothers-sports-zone/shared-types";
-import { bdt } from "../../../lib/format";
+import { bdt, formatSlotRange } from "../../../lib/format";
 
 const PERIOD_ORDER: Period[] = ["Morning", "Afternoon", "Evening", "Night"];
 
@@ -51,7 +51,7 @@ function Cell({
         className={`${base} border-white bg-white text-black`}
         title="Click to release this slot"
       >
-        <span className="caption block opacity-70">{slot.label}</span>
+        <span className="caption block opacity-70">{formatSlotRange(slot.label)}</span>
         <span className="button-cap mt-2 block">Held by you</span>
         <span className="micro-cap mt-1 block opacity-70">expires {heldSeconds} · tap to release</span>
       </button>
@@ -60,7 +60,7 @@ function Cell({
   if (state === "booked" || state === "blackout") {
     return (
       <div className={`${base} border-hairline-on-dark bg-canvas-night-soft text-white/40`}>
-        <span className="caption block">{slot.label}</span>
+        <span className="caption block">{formatSlotRange(slot.label)}</span>
         <span className="button-cap mt-2 block">{state === "booked" ? "Booked" : "Blackout"}</span>
       </div>
     );
@@ -68,7 +68,7 @@ function Cell({
   if (state === "locked") {
     return (
       <div className={`${base} border-hairline-on-dark text-white/50`}>
-        <span className="caption block">{slot.label}</span>
+        <span className="caption block">{formatSlotRange(slot.label)}</span>
         <span className="button-cap mt-2 block">Locked</span>
         <span className="micro-cap mt-1 block opacity-70">another player is holding this slot</span>
       </div>
@@ -81,7 +81,7 @@ function Cell({
       disabled={busy}
       className={`${base} border-white text-white hover:bg-white hover:text-black disabled:opacity-50`}
     >
-      <span className="caption block opacity-70">{slot.label}</span>
+      <span className="caption block opacity-70">{formatSlotRange(slot.label)}</span>
       <span className="button-cap mt-2 block">{busy ? "Holding" : "Available"}</span>
       <span className="micro-cap mt-1 block opacity-70">{slot.price > 0 ? bdt(slot.price) : "price TBD"}</span>
     </button>

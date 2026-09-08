@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import type { Blackout, Slot } from "@brothers-sports-zone/shared-types";
-import { dhakaToday, formatDhakaDate } from "../../../../lib/format";
+import { dhakaToday, formatDhakaDate, formatSlotRange } from "../../../../lib/format";
 
 interface BlackoutRow extends Blackout {
   slots: { label: string } | null;
@@ -93,7 +93,7 @@ export default function BlackoutsPage() {
                 <option value="all">Entire day</option>
                 {slots.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.label}
+                    {formatSlotRange(s.label)}
                   </option>
                 ))}
               </select>
@@ -127,7 +127,7 @@ export default function BlackoutsPage() {
                 {rows.map((r) => (
                   <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline-on-dark py-3">
                     <span className="button-cap">{formatDhakaDate(r.date)}</span>
-                    <span className="caption text-white/70">{r.slots?.label ?? "Entire day"}</span>
+                    <span className="caption text-white/70">{r.slots ? formatSlotRange(r.slots.label) : "Entire day"}</span>
                     <span className="caption text-white/50">{r.reason ?? "—"}</span>
                     <button type="button" onClick={() => void remove(r.id)} className="micro-cap text-white/60 underline">
                       Remove
