@@ -5,9 +5,18 @@ export const SITE = {
   domain: "https://brotherssportszone.com",
   tagline: "Football turf in Faridpur, Dhaka",
   address: "Faridpur, Dhaka, Bangladesh",
-  // TODO(user): replace with the turf's real public phone number before launch.
-  phone: "+880 1XXX-XXXXXX",
-  mapsEmbed: "https://www.google.com/maps?q=Faridpur%2C%20Dhaka%2C%20Bangladesh&output=embed",
+  phone: "01878-099659",
 } as const;
 
 export const OG_IMAGE_PATH = "/docs/og-image.webp";
+
+/** Contact info baked into the prerendered /contact HTML and shown until the
+ *  live settings row loads. Keep in sync with the
+ *  202609090003_contact_info.sql column defaults. */
+export const CONTACT_DEFAULTS = {
+  phone: "01878099659",
+  email: "hello@brotherssportszone.com",
+  location: "Chanmari Drain Chak, Faridpur Sadar, Faridpur",
+  mapLat: 23.596549,
+  mapLng: 89.843991,
+};
