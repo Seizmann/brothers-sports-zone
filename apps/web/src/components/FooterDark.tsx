@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 /** Site-wide dark footer. */
 export function FooterDark() {
   return (
-    <footer className="bg-canvas-night text-white">
+    <footer className="print-hide bg-canvas-night text-white">
       <div className="hairline-dark px-6 py-12 md:px-10">
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           <div>

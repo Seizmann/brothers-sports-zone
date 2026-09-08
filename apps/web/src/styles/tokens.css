@@ -150,3 +150,12 @@ button { cursor: pointer; }
 
 /* Hairline separator on dark canvas */
 .hairline-dark { border-top: 1px solid var(--color-hairline-on-dark); }
+
+/* Receipt printing — black on white, chrome hidden */
+@media print {
+  body { background: #fff; }
+  .print-hide { display: none !important; }
+  .receipt { border: none !important; background: #fff !important; }
+  .receipt, .receipt * { color: #000 !important; }
+  .receipt .border-b, .receipt .border-hairline-on-dark { border-color: #ccc !important; }
+}

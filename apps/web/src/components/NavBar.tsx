@@ -16,7 +16,7 @@ export function NavBar() {
   const close = () => setOpen(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="fixed inset-x-0 top-0 z-50 print-hide">
       <div className="flex items-center justify-between px-6 py-6 md:px-10">
         <Link to="/" className="button-cap text-white" onClick={close}>
           Brothers Sports Zone
