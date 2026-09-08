@@ -18,6 +18,7 @@ import LoginPage from "../modules/auth/pages/LoginPage";
 import SignUpPage from "../modules/auth/pages/SignUpPage";
 
 import AdminLoginPage from "../modules/management/auth/pages/AdminLoginPage";
+import { ManagementLayout } from "../modules/management/ManagementLayout";
 import ManagementDashboardPage from "../modules/management/dashboard/pages/ManagementDashboardPage";
 import BookingsPage from "../modules/management/bookings/pages/BookingsPage";
 import NewWalkInPage from "../modules/management/bookings/pages/NewWalkInPage";
@@ -75,15 +76,17 @@ export function AppTree() {
 
         <Route path="/management/login" element={<AdminLoginPage />} />
         <Route element={<RequireAdmin />}>
-          <Route path="/management" element={<ManagementDashboardPage />} />
-          <Route path="/management/bookings" element={<BookingsPage />} />
-          <Route path="/management/bookings/new" element={<NewWalkInPage />} />
-          <Route path="/management/slots" element={<SlotsPage />} />
-          <Route path="/management/blackouts" element={<BlackoutsPage />} />
-          <Route path="/management/coupons" element={<CouponsPage />} />
-          <Route path="/management/admins" element={<AdminsPage />} />
-          <Route path="/management/users" element={<UsersPage />} />
-          <Route path="/management/analytics" element={<AnalyticsPage />} />
+          <Route element={<ManagementLayout />}>
+            <Route path="/management" element={<ManagementDashboardPage />} />
+            <Route path="/management/bookings" element={<BookingsPage />} />
+            <Route path="/management/bookings/new" element={<NewWalkInPage />} />
+            <Route path="/management/slots" element={<SlotsPage />} />
+            <Route path="/management/blackouts" element={<BlackoutsPage />} />
+            <Route path="/management/coupons" element={<CouponsPage />} />
+            <Route path="/management/admins" element={<AdminsPage />} />
+            <Route path="/management/users" element={<UsersPage />} />
+            <Route path="/management/analytics" element={<AnalyticsPage />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
