@@ -21,7 +21,14 @@ export default function GalleryPage() {
       </section>
       <section className="grid grid-cols-1 gap-2 px-2 pb-2 sm:grid-cols-2 md:grid-cols-3">
         {photos.map((p) => (
-          <img key={p.src} src={p.src} alt={p.alt} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+          <img
+            key={p.src}
+            src={p.src}
+            alt={p.alt}
+            loading="lazy"
+            draggable={false}
+            className="img-locked aspect-[4/3] w-full object-cover"
+          />
         ))}
       </section>
     </>

@@ -151,6 +151,17 @@ button { cursor: pointer; }
 /* Hairline separator on dark canvas */
 .hairline-dark { border-top: 1px solid var(--color-hairline-on-dark); }
 
+/* Image anti-save deterrent for public-page photography. pointer-events:none
+   keeps the browser hit test off the <img>, so long-press save (mobile) and
+   right-click "Save image as" (desktop) never trigger. A deterrent only:
+   the files remain publicly fetchable via view-source or a direct URL. */
+.img-locked {
+  pointer-events: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+}
+
 /* Receipt printing — black on white, chrome hidden */
 @media print {
   body { background: #fff; }

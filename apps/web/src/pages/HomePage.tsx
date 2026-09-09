@@ -97,8 +97,9 @@ export default function HomePage() {
         <img
           src="/docs/hero-turf-night.webp"
           alt="Brothers Sports Zone football turf under floodlights at night"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="img-locked absolute inset-0 h-full w-full object-cover"
           fetchPriority="high"
+          draggable={false}
         />
         <div className="relative p-6 pb-16 sm:p-10 sm:pb-20 lg:p-16 lg:pb-24">
           <p className="eyebrow mb-6 text-white">Faridpur · Dhaka · Bangladesh</p>
@@ -118,8 +119,9 @@ export default function HomePage() {
         <img
           src="/docs/turf-aerial-day.webp"
           alt="Aerial view of the football turf"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="img-locked absolute inset-0 h-full w-full object-cover"
           loading="lazy"
+          draggable={false}
         />
         <div className="relative p-6 pb-16 sm:p-10 sm:pb-20 lg:p-16 lg:pb-24">
           <p className="eyebrow mb-6 text-white">The turf</p>
@@ -146,8 +148,9 @@ export default function HomePage() {
         <img
           src="/docs/match-action-night.webp"
           alt="Players contesting the ball at night"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="img-locked absolute inset-0 h-full w-full object-cover"
           loading="lazy"
+          draggable={false}
         />
         <div className="relative p-6 pb-16 sm:p-10 sm:pb-20 lg:p-16 lg:pb-24">
           <p className="eyebrow mb-6 text-white">Booking open</p>
