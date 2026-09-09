@@ -7,6 +7,71 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="description" content="Brothers Sports Zone — football turf booking in Faridpur, Dhaka." />
     <title>Brothers Sports Zone</title>
+    <!-- Site-wide structured data. Business facts (address, geo, phone, social
+         links) are static defaults kept in sync with the settings singleton
+         column defaults (migrations 202609090003/202609090004 and the
+         CONTACT_DEFAULTS / SOCIAL_DEFAULTS constants in src/lib/site.ts).
+         The turf is the publisher; the site creator and maintainer are
+         credited separately and are not the business owner. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SportsActivityLocation",
+          "@id": "https://brotherssportszone.com/#turf",
+          "name": "Brothers Sports Zone",
+          "url": "https://brotherssportszone.com",
+          "description": "Single football turf in Faridpur, Dhaka, Bangladesh. Sixteen 90-minute slots daily, booked online.",
+          "telephone": "+8801878099659",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Chanmari Drain Chak, Faridpur Sadar",
+            "addressLocality": "Faridpur",
+            "addressCountry": "BD"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 23.596549,
+            "longitude": 89.843991
+          },
+          "sameAs": [
+            "https://www.facebook.com/share/1DV8SpFLL9/",
+            "https://www.instagram.com/brothers_sports_zone_faridpur"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://brotherssportszone.com/#website",
+          "url": "https://brotherssportszone.com",
+          "name": "Brothers Sports Zone",
+          "publisher": { "@id": "https://brotherssportszone.com/#turf" },
+          "creator": { "@id": "https://brotherssportszone.com/#sijan" },
+          "maintainer": { "@id": "https://brotherssportszone.com/#spritexai" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://brotherssportszone.com/#sijan",
+          "name": "Mohammad Sijan",
+          "url": "https://sijan.pro.bd",
+          "jobTitle": "Founder and Engineer",
+          "worksFor": { "@id": "https://brotherssportszone.com/#spritexai" }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://brotherssportszone.com/#spritexai",
+          "name": "SpritexAI",
+          "url": "https://spritexai.pro.bd",
+          "description": "SpritexAI is a public-benefit infrastructure lab. We are dedicated to building high-performance cognitive fabrics, orchestration systems, and securing distributed digital intelligence.",
+          "sameAs": [
+            "https://www.facebook.com/share/15xvQ3ZKrMi/",
+            "https://www.instagram.com/rexioai/",
+            "https://github.com/SpritexAI"
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
