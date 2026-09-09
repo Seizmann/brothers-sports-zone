@@ -113,6 +113,9 @@ export interface Settings {
   /** Google Maps pin coordinates. */
   map_lat: number;
   map_lng: number;
+  /** Footer social links (NOT NULL, has defaults). */
+  facebook_url: string;
+  instagram_url: string;
 }
 
 /** Item passed to the submit_booking RPC. */

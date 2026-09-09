@@ -13,6 +13,8 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
   const [coords, setCoords] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [instagram, setInstagram] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -31,6 +33,8 @@ export default function SettingsPage() {
         setEmail(row.contact_email);
         setLocation(row.contact_location);
         setCoords(`${row.map_lat},${row.map_lng}`);
+        setFacebook(row.facebook_url);
+        setInstagram(row.instagram_url);
       }
       setLoading(false);
     })();
@@ -53,6 +57,20 @@ export default function SettingsPage() {
     return [lat, lng];
   }
 
+  /** Required, well-formed http(s) URL — the footer social links. */
+  function checkUrl(label: string, raw: string): string | null {
+    if (!raw) return `${label} is required.`;
+    try {
+      const url = new URL(raw);
+      if (url.protocol !== "https:" && url.protocol !== "http:") {
+        return `${label} must start with https:// or http://.`;
+      }
+      return null;
+    } catch {
+      return `${label} must be a well-formed URL (e.g. https://example.com).`;
+    }
+  }
+
   async function save() {
     setError(null);
     setSaved(false);
@@ -72,6 +90,10 @@ export default function SettingsPage() {
     const map = parseCoords(coords);
     if (!map) return setError('Map coordinates must be two numbers as "lat,lng", lat between -90 and 90 and lng between -180 and 180.');
     const [mapLat, mapLng] = map;
+    const facebookUrl = facebook.trim();
+    const instagramUrl = instagram.trim();
+    const urlError = checkUrl("Facebook URL", facebookUrl) ?? checkUrl("Instagram URL", instagramUrl);
+    if (urlError) return setError(urlError);
     setBusy(true);
     const { error: e } = await supabase
       .from("settings")
@@ -84,6 +106,8 @@ export default function SettingsPage() {
         contact_location: contactLocation,
         map_lat: mapLat,
         map_lng: mapLng,
+        facebook_url: facebookUrl,
+        instagram_url: instagramUrl,
       })
       .eq("id", 1);
     setBusy(false);
@@ -192,6 +216,31 @@ export default function SettingsPage() {
             <p className="micro-cap text-white/50">
               Paste the pin as "latitude,longitude" — right-click the spot in Google Maps and copy the first two numbers.
             </p>
+            <p className="micro-cap border-t border-hairline-on-dark pt-5 text-white/50">
+              Social links shown in the footer.
+            </p>
+            <label className="block">
+              <span className="micro-cap block text-white/50">Facebook URL</span>
+              <input
+                type="url"
+                value={facebook}
+                onChange={(e) => setFacebook(e.target.value)}
+                placeholder="https://www.facebook.com/..."
+                className="text-input !min-h-[40px] !py-1"
+                aria-label="Facebook URL"
+              />
+            </label>
+            <label className="block">
+              <span className="micro-cap block text-white/50">Instagram URL</span>
+              <input
+                type="url"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="https://www.instagram.com/..."
+                className="text-input !min-h-[40px] !py-1"
+                aria-label="Instagram URL"
+              />
+            </label>
             <button
               type="button"
               onClick={() => void save()}
