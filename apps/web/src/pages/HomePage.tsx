@@ -105,7 +105,7 @@ export default function HomePage() {
           <p className="eyebrow mb-6 text-white">Faridpur · Dhaka · Bangladesh</p>
           <h1 className="display-xxl max-w-4xl">Play under the lights</h1>
           <p className="mt-8 max-w-xl text-base leading-7 tracking-[.32px] text-white/80">
-            One turf. Sixteen slots a day, morning to late night. Pick your slot, send the advance by bKash or Nagad,
+            One turf. Sixteen slots a day, morning to late night. Pick your slot, book it online,
             and your game is on.
           </p>
           <GhostButton to="/book" className="mt-10">

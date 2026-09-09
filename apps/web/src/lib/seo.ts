@@ -13,7 +13,7 @@ export const PUBLIC_PAGES: PageMeta[] = [
     path: "/",
     title: "Brothers Sports Zone — Football Turf Booking in Faridpur",
     description:
-      "Book a football turf slot at Brothers Sports Zone in Faridpur, Dhaka. Sixteen daily slots from morning to late night with live availability and bKash/Nagad advance payment.",
+      "Book a football turf slot at Brothers Sports Zone in Faridpur, Dhaka. Sixteen daily slots from morning to late night with live availability, advance payment online, and the rest in cash on arrival.",
   },
   {
     path: "/gallery",
@@ -50,13 +50,13 @@ export function headTagsFor(page: PageMeta): HeadTag[] {
   const image = `${SITE.domain}${OG_IMAGE_PATH}`;
   return [
     { tag: "title", attrs: {}, content: page.title },
-    { tag: "meta", attrs: { name: "description", content: page.description } },
-    { tag: "meta", attrs: { property: "og:title", content: page.title } },
-    { tag: "meta", attrs: { property: "og:description", content: page.description } },
-    { tag: "meta", attrs: { property: "og:type", content: "website" } },
-    { tag: "meta", attrs: { property: "og:url", content: url } },
-    { tag: "meta", attrs: { property: "og:image", content: image } },
-    { tag: "meta", attrs: { property: "og:site_name", content: SITE.name } },
+    { tag: "meta", attrs: { name: "description" }, content: page.description },
+    { tag: "meta", attrs: { property: "og:title" }, content: page.title },
+    { tag: "meta", attrs: { property: "og:description" }, content: page.description },
+    { tag: "meta", attrs: { property: "og:type" }, content: "website" },
+    { tag: "meta", attrs: { property: "og:url" }, content: url },
+    { tag: "meta", attrs: { property: "og:image" }, content: image },
+    { tag: "meta", attrs: { property: "og:site_name" }, content: SITE.name },
     { tag: "link", attrs: { rel: "canonical", href: url } },
   ];
 }

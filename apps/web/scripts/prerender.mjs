@@ -49,6 +49,9 @@ function headHtml(page) {
 for (const page of PUBLIC_PAGES) {
   const body = renderPage(page.path);
   const html = template
+    // Drop the template's static fallback description; the per-page one below
+    // must stay the only description meta on prerendered pages.
+    .replace(/<meta name="description"[^>]*>/, "")
     .replace(/<title>[\s\S]*?<\/title>/, headHtml(page))
     .replace(/<div id="root"><\/div>/, `<div id="root">${body}</div>`);
   const outDir = page.path === "/" ? distDir : path.join(distDir, page.path.replace(/^\//, ""));
