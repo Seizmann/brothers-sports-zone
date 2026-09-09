@@ -1,0 +1,14 @@
+# Brothers Sports Zone
+
+> Single football turf in Faridpur, Dhaka, Bangladesh, with online slot booking.
+
+Brothers Sports Zone is one football turf in Faridpur, Dhaka, Bangladesh. The day is split into sixteen 90-minute slots, from 6:00 in the morning to 6:00 the next morning, and the turf sets a price for each slot. Booking happens on the site: pick your dates and slots, sign in with a phone number and a 4-digit PIN, pay an advance online, and the turf confirms the booking after checking the payment. The rest is paid in cash on arrival. The terms page covers cancellations and refunds.
+
+## Pages
+
+- [Home](https://brotherssportszone.com/): What the turf offers and how booking works.
+- [Gallery](https://brotherssportszone.com/gallery): Photos of the turf and matches.
+- [Contact](https://brotherssportszone.com/contact): Address, phone, email, and a map.
+- [Terms of Service](https://brotherssportszone.com/terms): Booking, payment, and cancellation rules.
+- [Privacy Policy](https://brotherssportszone.com/privacy): What the site stores and how it is protected.
+- [Book a slot](https://brotherssportszone.com/book): The booking flow. Sign in with a phone number and a 4-digit PIN.
