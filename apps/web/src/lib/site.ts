@@ -20,3 +20,10 @@ export const CONTACT_DEFAULTS = {
   mapLat: 23.596549,
   mapLng: 89.843991,
 };
+
+/** Footer social links, same defaults convention as CONTACT_DEFAULTS. Keep
+ *  in sync with the 202609090004_social_links.sql column defaults. */
+export const SOCIAL_DEFAULTS = {
+  facebook: "https://www.facebook.com/share/1DV8SpFLL9/",
+  instagram: "https://www.instagram.com/brothers_sports_zone_faridpur",
+};
