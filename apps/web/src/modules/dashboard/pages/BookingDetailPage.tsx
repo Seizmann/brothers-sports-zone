@@ -5,7 +5,6 @@ import { cancelMyBooking, fetchBookingForUser, type BookingWithItems } from "../
 import { StatusChip } from "../components/StatusChip";
 import { createBaniqOrder, verifyBaniqPayment } from "../../../lib/baniqPay";
 import { bdt, formatDhakaDate, formatSlotRange } from "../../../lib/format";
-import type { PaymentMethod } from "@brothers-sports-zone/shared-types";
 import { SITE } from "../../../lib/site";
 
 function Receipt({ booking, userName }: { booking: BookingWithItems; userName: string }) {
@@ -145,13 +144,14 @@ export default function BookingDetailPage() {
   }
 
   /** Retry the gateway payment (the create-order function reuses a still-open
-   *  order, so this is safe to click more than once). */
-  async function onPayAgain(provider: PaymentMethod) {
-    if (!id || !booking) return;
+   *  order, so this is safe to click more than once). Method selection happens
+   *  on Baniq's hosted checkout, not here. */
+  async function onPayAgain() {
+    if (!id) return;
     setBusy(true);
     setError(null);
     try {
-      const { checkoutUrl } = await createBaniqOrder(id, provider);
+      const { checkoutUrl } = await createBaniqOrder(id);
       window.location.assign(checkoutUrl);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not start the payment. Please try again.");
@@ -229,19 +229,11 @@ export default function BookingDetailPage() {
             <div className="mt-4 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={() => void onPayAgain("bkash")}
+                onClick={() => void onPayAgain()}
                 disabled={busy}
                 className="ghost-button button-cap inline-flex items-center justify-center"
               >
-                {busy ? "Starting payment" : "Pay with bKash"}
-              </button>
-              <button
-                type="button"
-                onClick={() => void onPayAgain("nagad")}
-                disabled={busy}
-                className="ghost-button button-cap inline-flex items-center justify-center"
-              >
-                Pay with Nagad
+                {busy ? "Starting payment" : `Pay ${bdt(booking.advance_amount)} online`}
               </button>
             </div>
           </div>

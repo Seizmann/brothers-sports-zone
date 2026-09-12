@@ -35,6 +35,8 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
     return Math.min(settings.advance_amount_fixed, subtotal);
   }, [subtotal, settings.advance_amount_fixed]);
 
+  // Manual mode only — in Baniq mode the buyer picks the method on Baniq's
+  // hosted checkout, so no method choice exists on this side at all.
   const payNumber = method === "bkash" ? settings.bkash_number : settings.nagad_number;
 
   async function onSubmitBaniq() {
@@ -49,9 +51,10 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
         couponCode: couponApplied && coupon.trim() ? coupon.trim() : null,
       });
       // The booking now holds the slots (pending). Hand off to Baniq's hosted
-      // checkout; on return the booking page verifies server-side (and the
-      // webhook confirms independently).
-      const { checkoutUrl } = await createBaniqOrder(booking.id, method);
+      // checkout — method selection happens there, on Baniq's page; on return
+      // the booking page verifies server-side (and the webhook confirms
+      // independently).
+      const { checkoutUrl } = await createBaniqOrder(booking.id);
       window.location.assign(checkoutUrl);
       // Keep busy until the navigation completes; if it doesn't, show the way back.
       setError(null);
@@ -153,33 +156,36 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
         </p>
       </div>
 
-      {/* Payment method */}
-      <div className="mt-8">
-        <span className="button-cap mb-2 block">Payment method</span>
-        <div className="flex gap-2">
-          {(["bkash", "nagad"] as PaymentMethod[]).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMethod(m)}
-              aria-pressed={method === m}
-              className={`min-h-[48px] flex-1 rounded-xs border px-4 button-cap ${
-                method === m ? "border-black bg-black text-white" : "border-hairline-on-light text-black"
-              }`}
-            >
-              {m === "bkash" ? "bKash" : "Nagad"}
-            </button>
-          ))}
+      {/* Payment method (manual mode only — Baniq's own page collects it) */}
+      {!isBaniq && (
+        <div className="mt-8">
+          <span className="button-cap mb-2 block">Payment method</span>
+          <div className="flex gap-2">
+            {(["bkash", "nagad"] as PaymentMethod[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMethod(m)}
+                aria-pressed={method === m}
+                className={`min-h-[48px] flex-1 rounded-xs border px-4 button-cap ${
+                  method === m ? "border-black bg-black text-white" : "border-hairline-on-light text-black"
+                }`}
+              >
+                {m === "bkash" ? "bKash" : "Nagad"}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Instructions */}
       {isBaniq ? (
         <div className="mt-8 rounded-sm border border-hairline-on-light p-4">
           <p className="button-cap">Pay {bdt(advancePreview)} online</p>
           <p className="caption mt-2 text-ink-mute">
-            Continue to the secure Baniq Pay page and send {bdt(advancePreview)} from your {method === "bkash" ? "bKash" : "Nagad"} account.
-            The payment is verified automatically and your booking is confirmed right after — your slots stay held the whole time.
+            Continue to the secure Baniq Pay page to pay {bdt(advancePreview)} with your preferred method.
+            The payment is verified automatically and your booking is confirmed right after — your slots stay held
+            the whole time.
           </p>
         </div>
       ) : (

@@ -1,6 +1,8 @@
 /* Baniq Pay — create a hosted-checkout order for a pending gateway booking.
  * Auth: user JWT (platform verifies it; we read `sub` from the claims).
- * Body: { booking_id: uuid, provider?: 'bkash' | 'nagad' }
+ * Body: { booking_id: uuid, provider?: 'bkash' | 'nagad' } — the client sends
+ * no provider: the buyer picks the method on Baniq's hosted checkout from the
+ * merchant's configured options.
  * Calls POST /api/v1/orders on api.baniq.app, stores the order on the booking,
  * and returns the checkoutUrl the client must redirect to. Idempotent while
  * the previous order is still open. */

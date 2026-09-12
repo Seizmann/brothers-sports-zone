@@ -5,13 +5,14 @@ import { supabase } from "./supabase";
 import type { PaymentMethod } from "@brothers-sports-zone/shared-types";
 
 /** Creates (or reuses, while still open) the Baniq hosted-checkout order for a
- *  pending gateway booking. The caller redirects the browser to checkoutUrl. */
+ *  pending gateway booking. No provider is sent: the buyer picks the payment
+ *  method on Baniq's own checkout page from the merchant's configured options.
+ *  The caller redirects the browser to checkoutUrl. */
 export async function createBaniqOrder(
   bookingId: string,
-  provider: PaymentMethod,
 ): Promise<{ checkoutUrl: string; orderId: string }> {
   const { data, error } = await supabase.functions.invoke("baniq-create-order", {
-    body: { booking_id: bookingId, provider: provider === "nagad" ? "nagad" : "bkash" },
+    body: { booking_id: bookingId },
   });
   if (error) throw new Error(error.message);
   return data as { checkoutUrl: string; orderId: string };
