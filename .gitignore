@@ -7,11 +7,13 @@ node_modules/
 .env.local
 .env.*.local
 
-# Local/generated image assets
-docs/
+# Local/generated image assets (docs/* not docs/ so tracked doc files can be re-included)
+docs/*
 # Site images under apps/web/public/docs are committed (decision: session 4)
 !apps/web/public/docs/
 !apps/web/public/docs/**
+# Baniq Pay integration doc is committed (master prompt requirement; no secrets in it)
+!docs/baniq-pay.md
 
 # AI Agent working documents (never commit)
 AGENT.md
