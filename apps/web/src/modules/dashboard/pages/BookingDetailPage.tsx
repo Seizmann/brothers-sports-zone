@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useSession } from "../../../lib/session";
 import { cancelMyBooking, fetchBookingForUser, type BookingWithItems } from "../lib/dashboardData";
 import { StatusChip } from "../components/StatusChip";
+import { createBaniqOrder, verifyBaniqPayment } from "../../../lib/baniqPay";
 import { bdt, formatDhakaDate, formatSlotRange } from "../../../lib/format";
+import type { PaymentMethod } from "@brothers-sports-zone/shared-types";
 import { SITE } from "../../../lib/site";
 
 function Receipt({ booking, userName }: { booking: BookingWithItems; userName: string }) {
@@ -72,11 +74,14 @@ function Receipt({ booking, userName }: { booking: BookingWithItems; userName: s
 export default function BookingDetailPage() {
   const { id } = useParams();
   const { session, profile } = useSession();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [booking, setBooking] = useState<BookingWithItems | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [baniqNotice, setBaniqNotice] = useState<string | null>(null);
+  const baniqReturnHandled = useRef(false);
 
   const load = useCallback(async () => {
     if (!session?.user?.id || !id) return;
@@ -95,6 +100,34 @@ export default function BookingDetailPage() {
     void load();
   }, [load]);
 
+  // Buyer returned from the Baniq hosted checkout: re-verify server-side once.
+  // The webhook is the independent confirmation path — if the payment is still
+  // processing here, the booking simply stays pending until it lands.
+  const baniqParam = searchParams.get("baniq");
+  useEffect(() => {
+    if (!booking || !id || !baniqParam || baniqReturnHandled.current) return;
+    baniqReturnHandled.current = true;
+    setSearchParams({}, { replace: true });
+    if (baniqParam === "cancel") {
+      setBaniqNotice("You returned without completing the payment. Complete it below, or cancel the booking.");
+      return;
+    }
+    void (async () => {
+      setError(null);
+      try {
+        const res = await verifyBaniqPayment(id);
+        if (res.paid) {
+          setBaniqNotice("Payment verified — your booking is confirmed.");
+        } else {
+          setBaniqNotice("Your payment is still processing. It will confirm automatically once verified.");
+        }
+        await load();
+      } catch {
+        setBaniqNotice("Your payment is still processing — check back in a moment.");
+      }
+    })();
+  }, [booking, id, baniqParam, setSearchParams, load]);
+
   async function onCancel() {
     if (!id) return;
     setBusy(true);
@@ -107,6 +140,21 @@ export default function BookingDetailPage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not cancel booking.");
     } finally {
+      setBusy(false);
+    }
+  }
+
+  /** Retry the gateway payment (the create-order function reuses a still-open
+   *  order, so this is safe to click more than once). */
+  async function onPayAgain(provider: PaymentMethod) {
+    if (!id || !booking) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const { checkoutUrl } = await createBaniqOrder(id, provider);
+      window.location.assign(checkoutUrl);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not start the payment. Please try again.");
       setBusy(false);
     }
   }
@@ -152,12 +200,51 @@ export default function BookingDetailPage() {
         )}
         {booking.status === "cancelled" && (
           <p className="caption mt-6 text-white/60">
-            Cancelled by {booking.cancelled_by === "admin" ? "the turf" : "you"}. Advance payments are not refunded on
-            user cancellation.
+            Cancelled{" "}
+            {booking.cancelled_by === "admin"
+              ? "by the turf"
+              : booking.cancelled_by === "system"
+                ? "automatically — the payment was not completed in time"
+                : "by you"}
+            . Advance payments are not refunded on user cancellation.
           </p>
         )}
         {booking.status === "cancelled" && booking.refund_status && (
           <p className="caption mt-2 text-white/60">Refund status: {booking.refund_status}</p>
+        )}
+
+        {baniqNotice && (
+          <p role="status" className="mt-6 rounded-xs border border-white px-4 py-3 text-white">
+            {baniqNotice}
+          </p>
+        )}
+
+        {booking.status === "pending_payment" && booking.payment_method === "baniq_pay" && (
+          <div className="mt-8 rounded-sm border border-hairline-on-dark p-5">
+            <p className="button-cap">Payment not completed</p>
+            <p className="caption mt-2 max-w-md text-white/60">
+              Pay {bdt(booking.advance_amount)} online to confirm this booking. Your slots stay held until the payment
+              completes or the booking is cancelled.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => void onPayAgain("bkash")}
+                disabled={busy}
+                className="ghost-button button-cap inline-flex items-center justify-center"
+              >
+                {busy ? "Starting payment" : "Pay with bKash"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void onPayAgain("nagad")}
+                disabled={busy}
+                className="ghost-button button-cap inline-flex items-center justify-center"
+              >
+                Pay with Nagad
+              </button>
+            </div>
+          </div>
         )}
 
         {cancellable && (

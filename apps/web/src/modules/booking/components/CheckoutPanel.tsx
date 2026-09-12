@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Booking, PaymentMethod, Settings, Slot, SlotLock } from "@brothers-sports-zone/shared-types";
 import { bdt, formatDhakaDate, formatSlotRange } from "../../../lib/format";
+import { createBaniqOrder } from "../../../lib/baniqPay";
 import { submitBooking } from "../lib/bookingData";
 
 interface CheckoutPanelProps {
@@ -10,10 +11,15 @@ interface CheckoutPanelProps {
   onSubmitted: (booking: Booking) => void;
 }
 
-/** Step 2 — booking summary + coupon + manual bKash/Nagad payment submission.
+/** Step 2 — booking summary + coupon + payment submission.
+ *  Manual mode: user sends the advance to the turf's bKash/Nagad number and
+ *  submits the TrxID for admin verification. Baniq mode (settings toggle):
+ *  the booking is created as pending and the browser is redirected to Baniq's
+ *  hosted checkout, where the payment is auto-verified server-side.
  *  Rendered on a white form surface; all amounts are preview-only, the server
  *  recomputes them authoritatively inside submit_booking. */
 export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: CheckoutPanelProps) {
+  const isBaniq = settings.payment_gateway_mode === "baniq_pay";
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [method, setMethod] = useState<PaymentMethod>("bkash");
@@ -31,7 +37,32 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
 
   const payNumber = method === "bkash" ? settings.bkash_number : settings.nagad_number;
 
-  async function onSubmit() {
+  async function onSubmitBaniq() {
+    setError(null);
+    setBusy(true);
+    try {
+      const booking = await submitBooking({
+        items: items.map(({ lock }) => ({ slot_id: lock.slot_id, date: lock.date })),
+        paymentMethod: "baniq_pay",
+        txnId: null,
+        txnPhone: null,
+        couponCode: couponApplied && coupon.trim() ? coupon.trim() : null,
+      });
+      // The booking now holds the slots (pending). Hand off to Baniq's hosted
+      // checkout; on return the booking page verifies server-side (and the
+      // webhook confirms independently).
+      const { checkoutUrl } = await createBaniqOrder(booking.id, method);
+      window.location.assign(checkoutUrl);
+      // Keep busy until the navigation completes; if it doesn't, show the way back.
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Payment could not be started. Please try again.");
+      if (/coupon/i.test(e instanceof Error ? e.message : "")) setCouponApplied(false);
+      setBusy(false);
+    }
+  }
+
+  async function onSubmitManual() {
     setError(null);
     if (!txnId.trim()) {
       setError("Enter the Transaction ID from your bKash/Nagad payment.");
@@ -59,7 +90,7 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
     }
   }
 
-  const payNumberMissing = !payNumber;
+  const payNumberMissing = !isBaniq && !payNumber;
 
   return (
     <section className="rounded-md bg-canvas-light p-6 text-black sm:p-8">
@@ -143,57 +174,77 @@ export function CheckoutPanel({ items, settings, defaultPhone, onSubmitted }: Ch
       </div>
 
       {/* Instructions */}
-      <div className="mt-8 rounded-sm border border-hairline-on-light p-4">
-        <p className="button-cap">Send {bdt(advancePreview)}</p>
-        {payNumberMissing ? (
+      {isBaniq ? (
+        <div className="mt-8 rounded-sm border border-hairline-on-light p-4">
+          <p className="button-cap">Pay {bdt(advancePreview)} online</p>
           <p className="caption mt-2 text-ink-mute">
-            The turf's {method === "bkash" ? "bKash" : "Nagad"} number is not configured yet. Please contact the turf.
+            Continue to the secure Baniq Pay page and send {bdt(advancePreview)} from your {method === "bkash" ? "bKash" : "Nagad"} account.
+            The payment is verified automatically and your booking is confirmed right after — your slots stay held the whole time.
           </p>
-        ) : (
-          <p className="mt-2 text-base font-bold tracking-[.32px]">{payNumber}</p>
-        )}
-        <p className="caption mt-2 text-ink-mute">
-          Send the advance amount to the {method === "bkash" ? "bKash" : "Nagad"} number above, then enter your
-          Transaction ID below. Your slots stay held while the turf verifies the payment.
-        </p>
-      </div>
+        </div>
+      ) : (
+        <div className="mt-8 rounded-sm border border-hairline-on-light p-4">
+          <p className="button-cap">Send {bdt(advancePreview)}</p>
+          {payNumberMissing ? (
+            <p className="caption mt-2 text-ink-mute">
+              The turf's {method === "bkash" ? "bKash" : "Nagad"} number is not configured yet. Please contact the turf.
+            </p>
+          ) : (
+            <p className="mt-2 text-base font-bold tracking-[.32px]">{payNumber}</p>
+          )}
+          <p className="caption mt-2 text-ink-mute">
+            Send the advance amount to the {method === "bkash" ? "bKash" : "Nagad"} number above, then enter your
+            Transaction ID below. Your slots stay held while the turf verifies the payment.
+          </p>
+        </div>
+      )}
 
-      {/* Transaction inputs */}
-      <div className="mt-6 flex flex-col gap-5">
-        <label className="block">
-          <span className="button-cap mb-2 block">Transaction ID</span>
-          <input
-            type="text"
-            value={txnId}
-            onChange={(e) => setTxnId(e.target.value)}
-            placeholder="e.g. 9HX7A2B3CD"
-            className="text-input"
-          />
-        </label>
-        <label className="block">
-          <span className="button-cap mb-2 block">Sender phone number</span>
-          <input
-            type="tel"
-            value={senderPhone}
-            onChange={(e) => setSenderPhone(e.target.value)}
-            placeholder="01XXXXXXXXX"
-            className="text-input"
-          />
-        </label>
-      </div>
+      {/* Transaction inputs (manual mode only) */}
+      {!isBaniq && (
+        <div className="mt-6 flex flex-col gap-5">
+          <label className="block">
+            <span className="button-cap mb-2 block">Transaction ID</span>
+            <input
+              type="text"
+              value={txnId}
+              onChange={(e) => setTxnId(e.target.value)}
+              placeholder="e.g. 9HX7A2B3CD"
+              className="text-input"
+            />
+          </label>
+          <label className="block">
+            <span className="button-cap mb-2 block">Sender phone number</span>
+            <input
+              type="tel"
+              value={senderPhone}
+              onChange={(e) => setSenderPhone(e.target.value)}
+              placeholder="01XXXXXXXXX"
+              className="text-input"
+            />
+          </label>
+        </div>
+      )}
 
       {error && <p className="caption mt-5 font-bold">{error}</p>}
 
       <button
         type="button"
-        onClick={() => void onSubmit()}
+        onClick={() => void (isBaniq ? onSubmitBaniq() : onSubmitManual())}
         disabled={busy || payNumberMissing}
         className="ghost-button-light button-cap mt-8 w-full text-black disabled:opacity-50"
       >
-        {busy ? "Submitting" : "Submit payment"}
+        {busy
+          ? isBaniq
+            ? "Starting payment"
+            : "Submitting"
+          : isBaniq
+            ? `Pay ${bdt(advancePreview)} online`
+            : "Submit payment"}
       </button>
       <p className="caption mt-3 text-ink-mute">
-        Your booking will be reviewed by the turf. The advance is not refunded on user cancellation.
+        {isBaniq
+          ? "The payment is verified automatically on the Baniq Pay page. The advance is not refunded on user cancellation."
+          : "Your booking will be reviewed by the turf. The advance is not refunded on user cancellation."}
       </p>
     </section>
   );

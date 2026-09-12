@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
-import type { Settings } from "@brothers-sports-zone/shared-types";
+import type { PaymentGatewayMode, Settings } from "@brothers-sports-zone/shared-types";
 import { isValidPhone, normalizePhone } from "../../../../lib/format";
 
-/** Site-wide commerce settings (singleton row): manual payment numbers the
- *  checkout shows, and the fixed advance amount the booking RPC charges. */
+/** Site-wide commerce settings (singleton row): the checkout payment mode
+ *  (manual bKash/Nagad verification vs the Baniq Pay gateway), the manual
+ *  payment numbers the checkout shows, and the fixed advance amount. */
 export default function SettingsPage() {
+  const [gatewayMode, setGatewayMode] = useState<PaymentGatewayMode>("manual");
   const [bkash, setBkash] = useState("");
   const [nagad, setNagad] = useState("");
   const [advance, setAdvance] = useState("");
@@ -26,6 +28,7 @@ export default function SettingsPage() {
       if (e) setError(e.message);
       else {
         const row = data as Settings;
+        setGatewayMode(row.payment_gateway_mode);
         setBkash(row.bkash_number ?? "");
         setNagad(row.nagad_number ?? "");
         setAdvance(String(Number(row.advance_amount_fixed)));
@@ -98,6 +101,7 @@ export default function SettingsPage() {
     const { error: e } = await supabase
       .from("settings")
       .update({
+        payment_gateway_mode: gatewayMode,
         bkash_number: bkash.trim() ? normalizePhone(bkash) : null,
         nagad_number: nagad.trim() ? normalizePhone(nagad) : null,
         advance_amount_fixed: numericAdvance,
@@ -128,6 +132,38 @@ export default function SettingsPage() {
         <>
           <div className="mt-10 flex max-w-xl flex-col gap-5 rounded-sm border border-hairline-on-dark p-5">
             <label className="block">
+              <span className="micro-cap block text-white/50">Payment mode</span>
+              <div className="mt-2 flex gap-2" role="radiogroup" aria-label="Payment mode">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={gatewayMode === "manual"}
+                  onClick={() => setGatewayMode("manual")}
+                  className={`min-h-[48px] flex-1 rounded-xs border px-4 button-cap ${
+                    gatewayMode === "manual" ? "border-white bg-white text-black" : "border-hairline-on-dark text-white"
+                  }`}
+                >
+                  Manual bKash/Nagad
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={gatewayMode === "baniq_pay"}
+                  onClick={() => setGatewayMode("baniq_pay")}
+                  className={`min-h-[48px] flex-1 rounded-xs border px-4 button-cap ${
+                    gatewayMode === "baniq_pay" ? "border-white bg-white text-black" : "border-hairline-on-dark text-white"
+                  }`}
+                >
+                  Baniq Pay
+                </button>
+              </div>
+            </label>
+            <p className="micro-cap text-white/50">
+              Manual: users send the advance to your bKash/Nagad number and you verify each payment in the queue.
+              Baniq Pay: checkout redirects to Baniq's secure page and payments are verified automatically —
+              payments only work this way while it is active.
+            </p>
+            <label className="block border-t border-hairline-on-dark pt-5">
               <span className="micro-cap block text-white/50">bKash number (Send Money)</span>
               <input
                 type="tel"
