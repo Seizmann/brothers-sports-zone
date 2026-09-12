@@ -1,0 +1,6 @@
+# Minimal Supabase project config for CLI deploys (functions only; the live
+# project itself is managed through the dashboard + psql migrations).
+project_id = "brothers-sports-zone"
+
+[functions.baniq-webhook]
+verify_jwt = false

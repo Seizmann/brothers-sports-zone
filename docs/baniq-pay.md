@@ -6,7 +6,8 @@
 
 - Public developer docs: https://baniq.app/developers
 - Merchant dashboard: https://payme.baniq.app (owner account "Mohammad", free plan)
-- Status: **integration in progress** — this file is updated as each phase lands.
+- Status: **implemented and deployed 2026-09-12** — remaining owner steps are the
+  real-payment test and flipping the mode toggle (below).
 
 ---
 
@@ -112,18 +113,19 @@ accounts. Agent-completed items are ticked as they land.
 - [x] Baniq Pay device app installed + paired on the merchant phone and online.
 - [x] Webhook secret generated in dashboard → API ও Webhook (value stays out of the repo;
       copied directly into the Supabase Edge Function secret `BANIQ_WEBHOOK_SECRET`).
-- [ ] **API key created** → Dashboard → API ও Webhook → "+ নতুন কী"; store the shown-once
-      secret immediately as `BANIQ_API_KEY_ID` + `BANIQ_API_SECRET` Edge Function secrets.
-- [ ] **Edge Functions deployed** (`baniq-create-order`, `baniq-verify`, `baniq-webhook`;
-      webhook function must have "Verify JWT" disabled) and secrets set.
-- [ ] **Webhook URL set** in Dashboard → API ও Webhook → Webhook URL:
-      `https://jbrndeeeictiwaydbchr.supabase.co/functions/v1/baniq-webhook`
-      (set only after the function is deployed).
+- [x] **API key created** → Dashboard → API ও Webhook → "+ নতুন কী" (label `bsz-website`);
+      key id + shown-once secret stored as `BANIQ_API_KEY_ID` + `BANIQ_API_SECRET`
+      Edge Function secrets on 2026-09-12.
+- [x] **Edge Functions deployed** (`baniq-create-order`, `baniq-verify`, `baniq-webhook`;
+      the webhook deploys with verify JWT disabled via `supabase/functions/baniq-webhook/config.json`)
+      and secrets set via `supabase secrets set` (CLI 2.117, SUPABASE_ACCESS_TOKEN).
+- [x] **Webhook URL set** in Dashboard → API ও Webhook → Webhook URL:
+      `https://jbrndeeeictiwaydbchr.supabase.co/functions/v1/baniq-webhook` (confirmed "সেভ হয়েছে").
 - [ ] **Real-payment test** (no sandbox exists): create a test booking with the mode
       toggle ON, complete checkout, send the exact advance amount from a bKash/Nagad
       account whose number matches the sender number declared on Baniq's checkout page,
       then confirm: booking flips to `confirmed` automatically, receipt shows the Baniq
-      order id, admin bookings list shows payment method "Baniq pay".
+      order id, admin bookings list shows payment method "Baniq Pay".
       Note: paying from a **different** number than declared lands the order in
       `manual_review` (Baniq dashboard) — the booking will NOT auto-confirm; handle it
       inside Baniq's dashboard or use a matching sender number.
@@ -132,19 +134,20 @@ accounts. Agent-completed items are ticked as they land.
 - [ ] Free-plan note: 100 auto-verified payments/month. If monthly advance payments
       exceed that, orders fall back to manual review — upgrade the Baniq plan.
 
-### Fallback deployment path (if dashboard deploy is unavailable)
+### Fallback deployment path (not needed — functions are deployed)
 
-Install the Supabase CLI, add `SUPABASE_ACCESS_TOKEN` (Supabase dashboard → Access
-Tokens) to `SECRETS.md`, then from the repo root:
+If a future session needs to redeploy from the repo:
 
 ```
-supabase functions deploy baniq-create-order baniq-verify baniq-webhook \
+SUPABASE_ACCESS_TOKEN=… npx supabase functions deploy baniq-create-order baniq-verify baniq-webhook \
   --project-ref jbrndeeeictiwaydbchr
-supabase secrets set BANIQ_API_KEY_ID=… BANIQ_API_SECRET=… BANIQ_WEBHOOK_SECRET=… \
+SUPABASE_ACCESS_TOKEN=… npx supabase secrets set \
+  --env-file <file with BANIQ_API_KEY_ID / BANIQ_API_SECRET / BANIQ_WEBHOOK_SECRET> \
   --project-ref jbrndeeeictiwaydbchr
 ```
 
-(`baniq-webhook` is deployed with `--no-verify-jwt`.)
+(`baniq-webhook` is deployed with verify_jwt disabled — see `supabase/config.toml` and
+`supabase/functions/baniq-webhook/config.json`.)
 
 ---
 
@@ -153,3 +156,13 @@ supabase secrets set BANIQ_API_KEY_ID=… BANIQ_API_SECRET=… BANIQ_WEBHOOK_SEC
 - **2026-09-12 (planning):** read developer docs + merchant dashboard (read-only); API
   contract verified; schema/RPC/UI/Edge-Function plan approved; live payment test
   deferred to owner.
+- **2026-09-12 (implementation):** migration 012 applied via psql and verified 31/31
+  (mode guard, pending_payment creation, advance math, confirm idempotency/amount
+  checks, stale sweep + lock freeing, grants matrix); three Edge Functions written and
+  deployed via Supabase CLI with secrets set; Baniq API key created (bsz-website) and
+  webhook URL saved in the merchant dashboard; checkout/settings/admin UI shipped.
+  Verification without money movement: webhook endpoint matrix 7/7 (401 without/bad
+  signature; 200 + `booking_not_found` for unknown order; other events ignored;
+  create-order 401 for unauthenticated/anon/garbage JWT) and a live create-order E2E
+  (throwaway user → real unpaid Baniq order `cmty42zcu000ke1unqjtvy01i` → checkoutUrl
+  + DB columns + idempotent reuse + verify `paid:false`) — all test rows cleaned up.
