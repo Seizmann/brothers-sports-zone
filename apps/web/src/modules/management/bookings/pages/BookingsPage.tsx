@@ -11,6 +11,7 @@ import {
   type AdminBookingRow,
 } from "../lib/adminBookingsData";
 import { bdt, formatDhakaDate, formatSlotRange } from "../../../../lib/format";
+import { paymentMethodLabel } from "../../../../lib/baniqPay";
 
 const STATUSES: Array<BookingStatus | "all"> = [
   "all",
@@ -169,9 +170,9 @@ export default function BookingsPage() {
             onChange={(e) => setFilter("method", e.target.value)}
             className="text-input !min-h-[40px] !w-36 !py-1 [color-scheme:dark]"
           >
-            {["all", "bkash", "nagad", "cash"].map((m) => (
+            {["all", "bkash", "nagad", "cash", "baniq_pay"].map((m) => (
               <option key={m} value={m}>
-                {m === "all" ? "All methods" : m}
+                {m === "all" ? "All methods" : paymentMethodLabel(m as PaymentMethod)}
               </option>
             ))}
           </select>
@@ -256,7 +257,7 @@ export default function BookingsPage() {
                       )}
                     </td>
                     <td className="py-4 pr-4">
-                      <span className="caption capitalize text-white/70">{b.payment_method ?? "—"}</span>
+                      <span className="caption text-white/70">{paymentMethodLabel(b.payment_method)}</span>
                     </td>
                     <td className="py-4 pr-4">
                       <span className="caption text-white/70">{b.txn_id ?? "—"}</span>

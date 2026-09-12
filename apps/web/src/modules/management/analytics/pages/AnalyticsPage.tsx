@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import type { Booking, BookingItem } from "@brothers-sports-zone/shared-types";
 import { bdt, dhakaDateShifted, dhakaToday, formatDhakaDate, formatSlotRange } from "../../../../lib/format";
+import { paymentMethodLabel } from "../../../../lib/baniqPay";
 
 interface ItemWithSlot extends BookingItem {
   slots: { label: string; period: string } | null;
@@ -82,7 +83,7 @@ export default function AnalyticsPage() {
     const slotSeries = [...bySlot.entries()].sort(([, a], [, b]) => b - a);
     const maxSlot = Math.max(1, ...slotSeries.map(([, v]) => v));
 
-    const byMethod: Record<string, number> = { bkash: 0, nagad: 0, cash: 0 };
+    const byMethod: Record<string, number> = { bkash: 0, nagad: 0, cash: 0, baniq_pay: 0 };
     for (const b of activeBookings) {
       if (b.payment_method) byMethod[b.payment_method] += Number(b.total_amount);
     }
@@ -258,11 +259,11 @@ export default function AnalyticsPage() {
             <div>
               <h2 className="button-cap mb-6 text-white/60">Revenue by payment method</h2>
               <ul className="flex flex-col gap-3">
-                {(["bkash", "nagad", "cash"] as const).map((m) => {
+                {(["bkash", "nagad", "cash", "baniq_pay"] as const).map((m) => {
                   const share = Math.round((stats.byMethod[m] / (stats.gross || 1)) * 100);
                   return (
                     <li key={m} className="flex items-center justify-between gap-3">
-                      <span className="button-cap capitalize">{m}</span>
+                      <span className="button-cap">{paymentMethodLabel(m)}</span>
                       <span className="h-4 flex-1 border border-hairline-on-dark">
                         <span className="block h-full bg-white" style={{ width: `${share}%` }} />
                       </span>
