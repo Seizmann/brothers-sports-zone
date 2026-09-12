@@ -5,7 +5,10 @@ export type BookingStatus =
   | "cancelled"
   | "rejected";
 
-export type PaymentMethod = "bkash" | "nagad" | "cash";
+export type PaymentMethod = "bkash" | "nagad" | "cash" | "baniq_pay";
+
+/** Which checkout payment path is active (settings singleton). */
+export type PaymentGatewayMode = "manual" | "baniq_pay";
 
 export type CouponType = "percentage" | "flat";
 
@@ -75,9 +78,14 @@ export interface Booking {
   payment_method: PaymentMethod | null;
   txn_id: string | null;
   txn_phone: string | null;
+  /** Baniq Pay gateway bookkeeping (null unless the booking was paid via Baniq). */
+  baniq_order_id: string | null;
+  baniq_checkout_url: string | null;
+  baniq_order_expires_at: string | null;
+  baniq_paid_at: string | null;
   rejection_reason: string | null;
   refund_status: RefundStatus | null;
-  cancelled_by: "user" | "admin" | null;
+  cancelled_by: "user" | "admin" | "system" | null;
   created_at: string;
   updated_at: string;
 }
@@ -106,6 +114,8 @@ export interface Settings {
   nagad_number: string | null;
   advance_amount_fixed: number;
   lock_minutes: number;
+  /** Which checkout payment path is active: manual bKash/Nagad or Baniq Pay. */
+  payment_gateway_mode: PaymentGatewayMode;
   /** Public contact identity shown on /contact (NOT NULL, has defaults). */
   contact_phone: string;
   contact_email: string;
